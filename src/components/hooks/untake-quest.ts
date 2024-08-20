@@ -40,6 +40,7 @@ export function useUntakeQuest({ quest }: { quest: Quest }) {
             // Invalidate the queries to ensure subsequent uses will be fresh
             await utils.quest.getAllNotTakenSideQuests.invalidate();
             await utils.quest.getAllTakenSideQuests.invalidate();
+            await utils.quest.getUserScore.invalidate();
         },
     });
 }

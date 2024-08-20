@@ -6,6 +6,7 @@ export function useUploadProofQuest({ setIsDialogOpen }: { setIsDialogOpen: (ope
         onSuccess: async () => {
             setIsDialogOpen(false);
             await utils.quest.getAllTakenSideQuests.invalidate();
+            await utils.quest.getUserScore.invalidate();
         },
     });
 }

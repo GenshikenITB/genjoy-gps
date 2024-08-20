@@ -35,6 +35,7 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
         onSuccess: async () => {
             await utils.quest.getAllNotTakenSideQuests.invalidate();
             await utils.quest.getAllTakenSideQuests.invalidate();
+            await utils.quest.getUserScore.invalidate();
         },
     });
 }

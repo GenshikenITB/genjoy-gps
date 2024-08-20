@@ -33,6 +33,34 @@ export const questRouter = createTRPCRouter({
     });
   }),
 
+  getUserScore: protectedProcedure.query(async ({ ctx }) => {
+    // Get the user's score
+    const quests = await ctx.db.questEnrollment.findMany({
+      where: {
+        userId: ctx.session.user.id,
+        completedAt: { not: null },
+        proof: { not: null },
+      },
+      include: {
+        quest: true,
+      },
+    });
+
+    return quests.reduce((acc, quest) => {
+      return acc + (quest.quest.points ?? 0);
+    }, 0);
+  }),
+
+  getMaxScore: protectedProcedure.query(async ({ ctx }) => {
+    // Get the maximum score
+    const quests = await ctx.db.quest.findMany();
+
+    return quests.reduce((acc, quest) => {
+      return acc + (quest.points ?? 0);
+    }, 0);
+
+  }),
+
   takeQuest: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: id }) => {

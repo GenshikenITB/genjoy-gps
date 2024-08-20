@@ -3,9 +3,30 @@
 import { Card, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useTakeQuest } from "@/components/hooks/take-quest";
+import { api } from "@/trpc/react";
 
 export function Profile() {
   const { data: session } = useSession();
+  const userScore = api.quest.getUserScore.useQuery();
+  const maxScore = api.quest.getMaxScore.useQuery();
+
+  const percentage = (userScore.data / maxScore.data) * 100;
+
+  // Determine the color class based on percentage
+  let colorClass = "text-red-200";
+
+  if (percentage > 0 && percentage <= 20) {
+    colorClass = "text-orange-200";
+  } else if (percentage > 20 && percentage <= 40) {
+    colorClass = "text-yellow-200";
+  } else if (percentage > 40 && percentage <= 60) {
+    colorClass = "text-yellow-300";
+  } else if (percentage > 60 && percentage <= 80) {
+    colorClass = "text-green-200";
+  } else if (percentage > 80 && percentage <= 100) {
+    colorClass = "text-green-300";
+  }
 
   return (
     <Card className="h-46 bg-secondary">
@@ -25,8 +46,8 @@ export function Profile() {
             <span className="text-sm font-light italic text-muted-foreground">
               {session?.user.email}
             </span>
-            <span className="mt-3 text-2xl font-black text-green-300">
-              87,000 ppt
+            <span className={`mt-3 text-2xl font-black ${colorClass}`}>
+              {userScore.data}/{maxScore.data} ppt
             </span>
           </div>
         </div>
