@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import type { Quest, QuestEnrollment } from "@prisma/client";
 import { CheckIcon, EyeIcon, TrashIcon, UploadIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-import { UploadButton, UploadDropzone } from "@/utils/uploadthing";
+import { useState } from "react";
+import { UploadDropzone } from "@/utils/uploadthing";
 import Image from "next/image";
-import { api } from "@/trpc/react";
 import { useUploadProofQuest } from "@/components/hooks/upload-proof-quest";
 import { cn } from "@/lib/utils";
 

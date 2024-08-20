@@ -3,7 +3,6 @@
 import { Card, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useTakeQuest } from "@/components/hooks/take-quest";
 import { api } from "@/trpc/react";
 
 export function Profile() {
@@ -11,7 +10,10 @@ export function Profile() {
   const userScore = api.quest.getUserScore.useQuery();
   const maxScore = api.quest.getMaxScore.useQuery();
 
-  const percentage = (userScore.data / maxScore.data) * 100;
+  let percentage = 0;
+  if (userScore.data !== undefined && maxScore.data !== undefined) {
+    percentage = (userScore.data / maxScore.data) * 100;
+  }
 
   // Determine the color class based on percentage
   let colorClass = "text-red-200";
