@@ -16,8 +16,9 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             );
             utils.quest.getAllTakenSideQuests.setData(undefined, (old) => [
                 ...(old ?? []),
-                quest,
+                { quest: { ...quest }, id, userId: '', questId: '', proof: null, completedAt: null },
             ]);
+
 
             return { prevNotTakenQuests, prevTakenQuests };
         },

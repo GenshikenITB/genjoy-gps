@@ -75,6 +75,7 @@ model QuestEnrollment {
     id          String    @id @default(cuid())
     userId      String
     questId     String
+    proof       String?
     completedAt DateTime?
     user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     quest       Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)

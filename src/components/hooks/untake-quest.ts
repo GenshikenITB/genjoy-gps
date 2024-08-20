@@ -19,7 +19,7 @@ export function useUntakeQuest({ quest }: { quest: Quest }) {
                 quest,
             ]);
             utils.quest.getAllTakenSideQuests.setData(undefined, (old) =>
-                (old ?? []).filter((q) => q.id !== id),
+                (old ?? []).filter((q) => q.quest.id !== id),
             );
 
             // Return the previous state

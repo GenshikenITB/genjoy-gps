@@ -8,66 +8,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Quest } from "@prisma/client";
-import { CheckIcon, TrashIcon, UploadIcon } from "lucide-react";
+import type { Quest, QuestEnrollment } from "@prisma/client";
+import { CheckIcon, EyeIcon, TrashIcon, UploadIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
+import { UploadButton, UploadDropzone } from "@/utils/uploadthing";
+import Image from "next/image";
+import { api } from "@/trpc/react";
+import { useUploadProofQuest } from "@/components/hooks/upload-proof-quest";
+import { cn } from "@/lib/utils";
 
 export function SideQuestCard({
   isTaken = false,
   quest,
+  enrollment,
 }: {
   isTaken?: boolean;
   quest?: Quest;
+  enrollment?: QuestEnrollment;
 }) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [image, setImage] = useState<string | null | undefined>(null);
+
   const take = useTakeQuest({ quest: quest! });
   const untake = useUntakeQuest({ quest: quest! });
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const onDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const onDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const files = Array.from(e.dataTransfer.files);
-    setFile(files[0]);
-  }, []);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (file) {
-      setIsUploading(true);
-      // Here you would typically handle the file upload
-      // For example: uploadFiles([file])
-      console.log("Uploaded file:", file);
-      setIsUploading(false);
-      setIsDialogOpen(false);
-      setFile(null);
-    }
-  };
-
-  const handleSelectFile = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  const upload = useUploadProofQuest({ setIsDialogOpen });
 
   if (!quest) return null;
 
@@ -76,11 +41,28 @@ export function SideQuestCard({
       <Card className="flex justify-between">
         <CardHeader className="p-2">
           <span className="font-bold">{quest.title}</span>
+          <span
+            className={cn(
+              "text-xs font-bold text-yellow-200",
+              enrollment?.proof && "text-green-300",
+            )}
+          >
+            {quest.points} points
+          </span>
           <CardDescription>{quest.description}</CardDescription>
         </CardHeader>
         <div className="flex items-center justify-center gap-2 px-2">
           {isTaken ? (
             <>
+              {enrollment?.proof && (
+                <Button
+                  onClick={() => setIsPreviewOpen(true)}
+                  size="icon"
+                  variant="outline"
+                >
+                  <EyeIcon />
+                </Button>
+              )}
               <Button
                 onClick={() => setIsDialogOpen(true)}
                 size="icon"
@@ -112,55 +94,60 @@ export function SideQuestCard({
           <DialogHeader>
             <DialogTitle>Upload Image</DialogTitle>
           </DialogHeader>
-          <Button
-            variant="ghost"
-            className={`mt-4 flex h-64 flex-col items-center justify-center text-balance rounded-lg border-2 border-dashed text-center transition-colors ${
-              isDragging
-                ? "border-primary bg-secondary"
-                : "border-muted-foreground text-muted-foreground"
-            }`}
-            onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
-            onDrop={onDrop}
-            onClick={handleSelectFile}
-          >
-            {file ? (
-              <img
-                src={URL.createObjectURL(file)}
-                alt="Uploaded"
-                className="max-h-full max-w-full object-contain"
-              />
-            ) : (
-              <>
-                <UploadIcon size={60} strokeWidth={1} />
-                {isDragging ? (
-                  <p className="text-primary">Drop your image here</p>
-                ) : (
-                  <p className="text-muted-foreground">
-                    Drag and drop your image here, or click to select
-                  </p>
-                )}
-              </>
-            )}
-          </Button>
-          <div className="flex w-full justify-end">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileInput}
-              className="hidden"
-              ref={fileInputRef}
+          {!image ? (
+            <UploadDropzone
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                setImage(res[0]?.url);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+              config={{
+                mode: "auto",
+              }}
             />
-            {file && (
+          ) : (
+            <>
+              <Image
+                src={image ?? "/avatar.png"}
+                alt="Uploaded"
+                width={400}
+                height={400}
+                objectFit="contain"
+                className="rounded-lg"
+              />
               <Button
-                className="w-full"
-                onClick={handleUpload}
-                disabled={isUploading}
+                onClick={async () =>
+                  upload.mutateAsync({
+                    questId: quest.id,
+                    image: image ?? "ERROR",
+                  })
+                }
+                disabled={upload.isPending}
               >
-                {isUploading ? "Uploading..." : "Upload"}
+                {upload.isPending ? "Loading..." : "Submit Bukti"}
               </Button>
-            )}
-          </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-[400px] rounded-xl">
+          <DialogHeader>
+            <DialogTitle>Preview</DialogTitle>
+          </DialogHeader>
+
+          <Image
+            src={enrollment?.proof ?? "/avatar.png"}
+            alt="Uploaded"
+            width={400}
+            height={400}
+            objectFit="contain"
+            className="rounded-lg"
+          />
+          <Button onClick={() => setIsPreviewOpen(false)}>Close</Button>
         </DialogContent>
       </Dialog>
     </>

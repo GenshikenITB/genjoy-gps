@@ -22,37 +22,16 @@ export const questRouter = createTRPCRouter({
 
   getAllTakenSideQuests: protectedProcedure.query(async ({ ctx }) => {
     // Get all quests that the user has completed
-    return await ctx.db.quest.findMany({
+    return await ctx.db.questEnrollment.findMany({
       where: {
-        QuestEnrollment: {
-          some: {
-            userId: ctx.session.user.id,
-            completedAt: { not: null },
-          },
-        },
+        userId: ctx.session.user.id,
+        completedAt: { not: null },
+      },
+      include: {
+        quest: true,
       },
     });
   }),
-
-  getQuestById: protectedProcedure
-    .input(z.string())
-    .query(async ({ ctx, input: id }) => {
-      // Get a specific quest by its id
-      const quest = await ctx.db.quest.findUnique({
-        where: {
-          id,
-        },
-      });
-
-      if (!quest) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Quest not found",
-        });
-      }
-
-      return quest;
-    }),
 
   takeQuest: protectedProcedure
     .input(z.string())
@@ -80,12 +59,35 @@ export const questRouter = createTRPCRouter({
     .input(z.string())
     .mutation(async ({ ctx, input: id }) => {
       // Mark a quest as not completed by the user
-      return ctx.db.questEnrollment.delete({
+      return ctx.db.questEnrollment.update({
         where: {
           userId_questId: {
             userId: ctx.session.user.id,
             questId: id,
           },
+        },
+        data: {
+          completedAt: null,
+        },
+      });
+    }),
+
+  uploadProof: protectedProcedure
+    .input(z.object({
+      questId: z.string(),
+      image: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Upload proof of quest completion
+      return ctx.db.questEnrollment.update({
+        where: {
+          userId_questId: {
+            userId: ctx.session.user.id,
+            questId: input.questId,
+          },
+        },
+        data: {
+          proof: input.image,
         },
       });
     }),
