@@ -14,18 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -55,14 +43,14 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id              String            @id @default(cuid())
+    name            String?
+    email           String?           @unique
+    emailVerified   DateTime?
+    image           String?
+    accounts        Account[]
+    sessions        Session[]
+    QuestEnrollment QuestEnrollment[]
 }
 
 model VerificationToken {
@@ -71,4 +59,25 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Quest {
+    id              String            @id @default(cuid())
+    title           String
+    description     String
+    points          Int
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    QuestEnrollment QuestEnrollment[]
+}
+
+model QuestEnrollment {
+    id          String    @id @default(cuid())
+    userId      String
+    questId     String
+    completedAt DateTime?
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    quest       Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, questId])
 }
