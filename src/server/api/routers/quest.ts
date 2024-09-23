@@ -53,7 +53,7 @@ export const questRouter = createTRPCRouter({
           quest.quest.type,
           quest.quest.isHandsOn,
           quest.isActivelyParticipating,
-          quest.isPresent !== null),
+          quest.isPresentVerified),
       0);
   }),
 

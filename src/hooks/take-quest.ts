@@ -22,6 +22,7 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
                     questId: '',
                     isActivelyParticipating: false,
                     isPresent: null,
+                    isPresentVerified: false,
                     completedAt: null
                 };
                 return old ? [...old, newQuest] : [newQuest];
@@ -43,10 +44,10 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
                 );
             }
         },
-        onSuccess: async () => {
-            await utils.quest.getAllNotTakenSideQuests.invalidate();
-            await utils.quest.getAllTakenSideQuests.invalidate();
-            await utils.quest.getUserScore.invalidate();
+        onSuccess: () => {
+            utils.quest.getAllNotTakenSideQuests.invalidate();
+            utils.quest.getAllTakenSideQuests.invalidate();
+            utils.quest.getUserScore.invalidate();
         },
     });
 }

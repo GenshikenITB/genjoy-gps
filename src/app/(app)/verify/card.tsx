@@ -8,8 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Quest, QuestEnrollment, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { useApprovePresence } from "@/hooks/approve-presence";
-import { useUnapprovePresence } from "@/hooks/unapprove-presence";
+import { useVerifyPresence } from "@/hooks/verify-presence";
+import { useUnverifyPresence } from "@/hooks/unverify-presence";
+import { useApproveParticipation } from "@/hooks/approve-participation";
+import { useUnapproveParticipation } from "@/hooks/unapprove-participation";
 
 export type QuestCardProps = QuestEnrollment & {
   quest: Quest;
@@ -18,11 +20,20 @@ export type QuestCardProps = QuestEnrollment & {
 
 export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { quest, user, isActivelyParticipating, isPresent, completedAt, id } =
-    enrollment;
+  const {
+    quest,
+    user,
+    isActivelyParticipating,
+    isPresentVerified,
+    isPresent,
+    completedAt,
+    id,
+  } = enrollment;
 
-  const approve = useApprovePresence(enrollment);
-  const unapprove = useUnapprovePresence(enrollment);
+  const verifyPresence = useVerifyPresence();
+  const unverifyPresence = useUnverifyPresence();
+  const approveParticipation = useApproveParticipation();
+  const unapproveParticipation = useUnapproveParticipation();
 
   return (
     <motion.div
@@ -127,9 +138,16 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
 
                 {isPresent && (
                   <>
-                    <p className="mb-2 text-sm font-medium">
-                      Proof of Presence:
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium">Proof of Presence:</p>
+                      <Badge
+                        className={
+                          isPresentVerified ? "bg-green-500" : "bg-red-500"
+                        }
+                      >
+                        {isPresentVerified ? "Verified" : "Not Verified"}
+                      </Badge>
+                    </div>
                     <div className="relative mt-4 h-[350px] w-full">
                       <Image
                         src={isPresent}
@@ -141,22 +159,44 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
                   </>
                 )}
                 <div className="mt-4 flex justify-end gap-2">
-                  {isActivelyParticipating ? (
+                  {isPresentVerified ? (
                     <Button
                       variant="destructive"
-                      onClick={() => unapprove.mutate(id)}
-                      disabled={unapprove.isPending}
+                      onClick={() => unverifyPresence.mutate(id)}
+                      disabled={unverifyPresence.isPending}
                     >
-                      {unapprove.isPending
-                        ? "Unapproving..."
-                        : "Unapprove Presence"}
+                      {unverifyPresence.isPending
+                        ? "Unverifying..."
+                        : "Unverify Presence"}
                     </Button>
                   ) : (
                     <Button
-                      onClick={() => approve.mutate(id)}
-                      disabled={approve.isPending}
+                      onClick={() => verifyPresence.mutate(id)}
+                      disabled={verifyPresence.isPending}
                     >
-                      {approve.isPending ? "Approving..." : "Approve Presence"}
+                      {verifyPresence.isPending
+                        ? "Verifying..."
+                        : "Verify Presence"}
+                    </Button>
+                  )}
+                  {isActivelyParticipating ? (
+                    <Button
+                      variant="destructive"
+                      onClick={() => unapproveParticipation.mutate(id)}
+                      disabled={unapproveParticipation.isPending}
+                    >
+                      {unapproveParticipation.isPending
+                        ? "Unapproving..."
+                        : "Unapprove Participation"}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => approveParticipation.mutate(id)}
+                      disabled={approveParticipation.isPending}
+                    >
+                      {approveParticipation.isPending
+                        ? "Approving..."
+                        : "Approve Participation"}
                     </Button>
                   )}
                 </div>

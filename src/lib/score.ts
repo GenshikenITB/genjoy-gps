@@ -4,7 +4,7 @@ export const calculatePoints = (
     type: string,
     isHandsOn: boolean,
     isActivelyParticipating: boolean,
-    isPresent: boolean,
+    isPresentVerified: boolean,
     fixedPtsBidang = 10,
     fixedPtsComun = 5,
 ): number => {
@@ -18,7 +18,7 @@ export const calculatePoints = (
     const baseValue = basePointsMap[type] ?? 0;
 
     // If the participant did not show up, deduct base points
-    if (!isPresent) {
+    if (!isPresentVerified) {
         return -baseValue;
     }
 

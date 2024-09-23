@@ -72,7 +72,7 @@ export function SideQuestCard({
           >
             <UploadIcon className="h-4 w-4" />
           </Button>
-          <Button
+          {/* <Button
             size="icon"
             variant={
               enrollment?.isActivelyParticipating ? "default" : "destructive"
@@ -83,7 +83,7 @@ export function SideQuestCard({
             ) : (
               <SkullIcon className="h-4 w-4" />
             )}
-          </Button>
+          </Button> */}
           <Button
             onClick={async () => untake.mutateAsync(quest.id)}
             size="icon"

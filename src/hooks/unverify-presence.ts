@@ -1,9 +1,9 @@
 import { api } from "@/trpc/react";
-import { QuestEnrollment } from "@prisma/client";
 
-export function useUnapprovePresence(enrollments: QuestEnrollment) {
+
+export function useUnverifyPresence() {
     const utils = api.useUtils();
-    return api.mamet.unapprovePresence.useMutation({
+    return api.mamet.unverifyPresence.useMutation({
         onSuccess: async () => {
             await utils.mamet.getAllEnrollments.invalidate();
         },

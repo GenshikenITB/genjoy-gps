@@ -16,7 +16,7 @@ export const mametRouter = createTRPCRouter({
             });
         }),
 
-    unapprovePresence: protectedProcedure
+    unapproveActiveParticipate: protectedProcedure
         .input(z.string())
         .mutation(async ({ ctx, input: id }) => {
             // Unapprove a user's presence
@@ -30,7 +30,7 @@ export const mametRouter = createTRPCRouter({
             });
         }),
 
-    approvePresence: protectedProcedure
+    approveActiveParticipate: protectedProcedure
         .input(z.string())
         .mutation(async ({ ctx, input: id }) => {
             // Approve a user's presence
@@ -40,6 +40,34 @@ export const mametRouter = createTRPCRouter({
                 },
                 data: {
                     isActivelyParticipating: true,
+                },
+            });
+        }),
+
+    verifyPresence: protectedProcedure
+        .input(z.string())
+        .mutation(async ({ ctx, input: id }) => {
+            // Verify a user's presence
+            return await ctx.db.questEnrollment.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    isPresentVerified: true,
+                },
+            });
+        }),
+
+    unverifyPresence: protectedProcedure
+        .input(z.string())
+        .mutation(async ({ ctx, input: id }) => {
+            // Unverify a user's presence
+            return await ctx.db.questEnrollment.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    isPresentVerified: false,
                 },
             });
         }),
