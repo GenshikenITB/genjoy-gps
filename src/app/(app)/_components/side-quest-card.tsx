@@ -14,9 +14,8 @@ import { QuestType, type Quest, type QuestEnrollment } from "@prisma/client";
 import {
   CheckIcon,
   EyeIcon,
-  GiftIcon,
   MoreVerticalIcon,
-  SkullIcon,
+  PencilIcon,
   TrashIcon,
   UploadIcon,
 } from "lucide-react";
@@ -32,13 +31,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDeleteQuest } from "@/hooks/delete-quest";
 
 export function SideQuestCard({
   isTaken = false,
+  isMamet = false,
+  openDialog,
   quest,
   enrollment,
 }: {
   isTaken?: boolean;
+  isMamet?: boolean;
+  openDialog?: (quest: Quest) => void;
   quest?: Quest;
   enrollment?: QuestEnrollment;
 }) {
@@ -49,6 +53,7 @@ export function SideQuestCard({
   const take = useTakeQuest({ quest: quest! });
   const untake = useUntakeQuest({ quest: quest! });
   const upload = useUploadProofQuest({ setIsDialogOpen });
+  const remove = useDeleteQuest();
 
   if (!quest) return null;
 
@@ -72,18 +77,6 @@ export function SideQuestCard({
           >
             <UploadIcon className="h-4 w-4" />
           </Button>
-          {/* <Button
-            size="icon"
-            variant={
-              enrollment?.isActivelyParticipating ? "default" : "destructive"
-            }
-          >
-            {enrollment?.isActivelyParticipating ? (
-              <GiftIcon className="h-4 w-4" />
-            ) : (
-              <SkullIcon className="h-4 w-4" />
-            )}
-          </Button> */}
           <Button
             onClick={async () => untake.mutateAsync(quest.id)}
             size="icon"
@@ -123,41 +116,63 @@ export function SideQuestCard({
             <CardDescription>{quest.description}</CardDescription>
           </CardHeader>
           <div className="flex items-center justify-center px-2">
-            {isTaken ? (
-              <>
-                <div className="hidden items-center gap-2 sm:flex">
-                  <ActionButtons />
-                </div>
-                <div className="sm:hidden">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVerticalIcon className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setIsPreviewOpen(true)}>
-                        Preview
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-                        Upload
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={async () => untake.mutateAsync(quest.id)}
-                      >
-                        Untake Quest
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </>
-            ) : (
-              <Button
-                onClick={async () => take.mutateAsync(quest.id)}
-                size="icon"
-              >
-                <CheckIcon className="h-4 w-4" />
-              </Button>
+            {!isMamet &&
+              (isTaken ? (
+                <>
+                  <div className="hidden items-center gap-2 sm:flex">
+                    <ActionButtons />
+                  </div>
+                  <div className="sm:hidden">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVerticalIcon className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => setIsPreviewOpen(true)}
+                        >
+                          Preview
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+                          Upload
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={async () => untake.mutateAsync(quest.id)}
+                        >
+                          Untake Quest
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </>
+              ) : (
+                <Button
+                  onClick={async () => take.mutateAsync(quest.id)}
+                  size="icon"
+                >
+                  <CheckIcon className="h-4 w-4" />
+                </Button>
+              ))}
+
+            {isMamet && (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => openDialog?.(quest)}
+                  size="icon"
+                  variant="outline"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => remove.mutate(quest.id)}
+                  size="icon"
+                  variant="destructive"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
             )}
           </div>
         </Card>

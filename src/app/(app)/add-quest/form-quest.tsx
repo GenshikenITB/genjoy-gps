@@ -22,20 +22,38 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
+  DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
-import { QuestType } from "@prisma/client";
+import { type Quest, QuestType } from "@prisma/client";
 import { Textarea } from "@/components/ui/textarea";
 import { type QuestFormProps, questFormSchema } from "@/validations/quest";
-import { useState } from "react";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 
-export default function AddQuestDialog() {
-  const [isOpen, setIsOpen] = useState(false);
-
+export function AddQuestDialog({
+  isOpen,
+  isEditing,
+  quest,
+  setIsOpen,
+  setIsEditing,
+  setEditingQuest,
+  closeDialog,
+}: {
+  isOpen: boolean;
+  isEditing?: boolean;
+  quest?: Quest;
+  setIsOpen: (isOpen: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void;
+  setEditingQuest: (quest?: Quest) => void;
+  closeDialog: () => void;
+}) {
   const utils = api.useUtils();
-  const { mutate, isPending } = api.mamet.createQuest.useMutation({
+
+  const createQuestMutation = api.mamet.createQuest.useMutation({
     onMutate() {
       toast.info("⌛ Creating quest...");
     },
@@ -44,35 +62,89 @@ export default function AddQuestDialog() {
       setIsOpen(false);
       form.reset();
       toast.success("✅ Quest created successfully.");
+      closeDialog();
     },
     onError() {
       toast.error("❗️ An error occurred while creating the quest.");
     },
   });
 
-  const form = useForm<QuestFormProps>({
-    resolver: zodResolver(questFormSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      type: QuestType.CREATIVE_ARTS,
-      isHandsOn: false,
+  const updateQuestMutation = api.mamet.editQuest.useMutation({
+    onMutate() {
+      toast.info("⌛ Updating quest...");
+    },
+    async onSuccess() {
+      await utils.mamet.getQuests.invalidate();
+      setIsOpen(false);
+      form.reset();
+      toast.success("✅ Quest updated successfully.");
+      closeDialog();
+    },
+    onError() {
+      toast.error("❗️ An error occurred while updating the quest.");
     },
   });
 
+  const form = useForm<QuestFormProps>({
+    resolver: zodResolver(questFormSchema),
+  });
+
   function onSubmit(values: z.infer<typeof questFormSchema>) {
-    mutate(values);
+    if (isEditing && quest?.id) {
+      // Update existing quest
+      updateQuestMutation.mutate({ id: quest.id, data: values });
+    } else {
+      // Create new quest
+      createQuestMutation.mutate(values);
+    }
   }
+
+  useEffect(() => {
+    if (isOpen && !isEditing) {
+      form.reset({
+        title: "",
+        description: "",
+        type: QuestType.CREATIVE_ARTS,
+        isHandsOn: false,
+      });
+    }
+    if (isEditing && quest) {
+      form.reset({
+        title: quest.title,
+        description: quest.description,
+        type: quest.type,
+        isHandsOn: quest.isHandsOn,
+      });
+    }
+  }, [isEditing, quest, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="mb-4 w-full">
-          Create Quest
-        </Button>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Button
+            size="sm"
+            className="mb-4 w-full"
+            onClick={() => {
+              setEditingQuest(undefined);
+              setIsEditing(false);
+            }}
+          >
+            Create Quest
+          </Button>
+        </motion.div>
       </DialogTrigger>
       <DialogContent className="max-w-sm rounded-md">
-        <DialogHeader>Create New Quest</DialogHeader>
+        <DialogHeader>
+          <DialogTitle>
+            {isEditing ? "Edit Quest" : "Create New Quest"}
+          </DialogTitle>
+          <DialogDescription>Side Quest GenJourney</DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Title Field */}
@@ -169,7 +241,13 @@ export default function AddQuestDialog() {
 
             <DialogFooter>
               <Button type="submit">
-                {isPending ? (
+                {isEditing ? (
+                  updateQuestMutation.isPending ? (
+                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Save Changes"
+                  )
+                ) : createQuestMutation.isPending ? (
                   <LoaderCircle className="h-5 w-5 animate-spin" />
                 ) : (
                   "Submit"
