@@ -10,10 +10,11 @@ export default async function SignIn() {
   if (session) {
     return redirect("/");
   }
+
   const providers = await getProviders();
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-10 px-5">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 px-5">
       <div className="flex flex-col items-center">
         <Image
           src="/genlogo-dark.svg"

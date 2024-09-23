@@ -48,6 +48,7 @@ model User {
     email           String?           @unique
     emailVerified   DateTime?
     image           String?
+    role            Role              @default(MENTEE)
     accounts        Account[]
     sessions        Session[]
     QuestEnrollment QuestEnrollment[]
@@ -88,4 +89,10 @@ model QuestEnrollment {
 enum QuestType {
     CREATIVE_ARTS
     COMMUNITY
+}
+
+enum Role {
+    MAMET
+    MENTOR
+    MENTEE
 }

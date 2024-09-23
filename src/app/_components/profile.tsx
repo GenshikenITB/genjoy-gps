@@ -103,7 +103,9 @@ export function Profile() {
               />
             </div>
             <div className="flex h-full flex-col justify-center text-right">
-              <span className="text-lg font-bold">{session?.user.name}</span>
+              <span className="text-lg font-bold">
+                {session?.user.name} - {session.user.role}
+              </span>
               <span className="text-sm font-light italic text-muted-foreground">
                 {session?.user.email}
               </span>
