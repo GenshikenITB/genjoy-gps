@@ -4,6 +4,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Profile() {
   const { data: session } = useSession();
@@ -30,11 +31,29 @@ export function Profile() {
     colorClass = "text-green-300";
   }
 
+  if (!session || userScore.isPending || maxScore.isPending)
+    return (
+      <Card className="bg-secondary">
+        <CardHeader className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative h-24 w-24 flex-grow-0 rounded bg-gray-600">
+              <Skeleton className="h-full w-full" />
+            </div>
+            <div className="flex h-full flex-col items-end justify-end gap-2">
+              <Skeleton className="h-6 w-[200px]" />
+              <Skeleton className="h-4 w-[150px]" />
+              <Skeleton className="h-8 w-[100px]" />
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+    );
+
   return (
-    <Card className="h-46 bg-secondary">
+    <Card className="bg-secondary">
       <CardHeader className="p-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="relative h-20 w-20 flex-grow-0 rounded bg-gray-600">
+          <div className="relative h-24 w-24 flex-grow-0 rounded bg-gray-600">
             <Image
               src={session?.user.image ?? "/avatar.png"}
               alt="Profile Picture"
