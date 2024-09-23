@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { api } from "@/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoaderCircle } from "lucide-react";
-import { QuestCard } from "./card";
+import { VerifyCard } from "./card";
 import { useSortedItems } from "@/hooks/sort-query";
 
 export function VerifyClientPage() {
@@ -71,7 +71,7 @@ export function VerifyClientPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <QuestCard enrollment={enrollment} />
+                  <VerifyCard enrollment={enrollment} />
                 </motion.div>
               ))}
             </motion.div>

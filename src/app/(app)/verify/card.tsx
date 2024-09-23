@@ -13,12 +13,12 @@ import { useUnverifyPresence } from "@/hooks/unverify-presence";
 import { useApproveParticipation } from "@/hooks/approve-participation";
 import { useUnapproveParticipation } from "@/hooks/unapprove-participation";
 
-export type QuestCardProps = QuestEnrollment & {
+export type VerifyCard = QuestEnrollment & {
   quest: Quest;
   user: User;
 };
 
-export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
+export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const {
     quest,
@@ -158,12 +158,13 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
                     </div>
                   </>
                 )}
-                <div className="mt-4 flex justify-end gap-2">
+                <div className="mt-4 flex w-full justify-end gap-2">
                   {isPresentVerified ? (
                     <Button
                       variant="destructive"
                       onClick={() => unverifyPresence.mutate(id)}
                       disabled={unverifyPresence.isPending}
+                      className="w-full"
                     >
                       {unverifyPresence.isPending
                         ? "Unverifying..."
@@ -173,6 +174,7 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
                     <Button
                       onClick={() => verifyPresence.mutate(id)}
                       disabled={verifyPresence.isPending}
+                      className="w-full"
                     >
                       {verifyPresence.isPending
                         ? "Verifying..."
@@ -184,6 +186,7 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
                       variant="destructive"
                       onClick={() => unapproveParticipation.mutate(id)}
                       disabled={unapproveParticipation.isPending}
+                      className="w-full"
                     >
                       {unapproveParticipation.isPending
                         ? "Unapproving..."
@@ -193,6 +196,7 @@ export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
                     <Button
                       onClick={() => approveParticipation.mutate(id)}
                       disabled={approveParticipation.isPending}
+                      className="w-full"
                     >
                       {approveParticipation.isPending
                         ? "Approving..."
