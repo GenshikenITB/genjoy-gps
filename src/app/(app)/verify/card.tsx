@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckCircle2, XCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Quest, QuestEnrollment, User } from "@prisma/client";
+import type { Quest, QuestEnrollment, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useVerifyPresence } from "@/hooks/verify-presence";
 import { useUnverifyPresence } from "@/hooks/unverify-presence";

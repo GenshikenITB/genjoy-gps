@@ -44,10 +44,10 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
                 );
             }
         },
-        onSuccess: () => {
-            utils.quest.getAllNotTakenSideQuests.invalidate();
-            utils.quest.getAllTakenSideQuests.invalidate();
-            utils.quest.getUserScore.invalidate();
+        onSuccess: async () => {
+            await utils.quest.getAllNotTakenSideQuests.invalidate();
+            await utils.quest.getAllTakenSideQuests.invalidate();
+            await utils.quest.getUserScore.invalidate();
         },
     });
 }
