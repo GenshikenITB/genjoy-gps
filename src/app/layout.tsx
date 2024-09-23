@@ -11,12 +11,13 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/theme-provider";
-import AuthProvider from "@/components/AuthProvider";
+import AuthProvider from "@/components/auth-provider";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -51,9 +52,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <TRPCReactProvider>
-              <div className="min-h-screen w-full max-w-xl p-5">{children}</div>
-            </TRPCReactProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>
