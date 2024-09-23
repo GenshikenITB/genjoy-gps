@@ -3,34 +3,80 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SideQuestCard } from "./side-quest-card";
 import { api } from "@/trpc/react";
-import { LoaderCircleIcon } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function SideQuestAvailable() {
   const quests = api.quest.getAllNotTakenSideQuests.useQuery();
+
   return (
-    <Card className="h-46 bg-secondary">
+    <Card className="bg-secondary">
       <CardHeader className="p-4">
-        <span className="font-black">AVAILABLE SIDE QUEST</span>
+        <motion.span
+          className="font-black"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          AVAILABLE SIDE QUEST
+        </motion.span>
       </CardHeader>
-      <CardContent className="space-y-2 px-4">
-        {quests.isLoading && (
-          <Card>
-            <CardHeader>
-              <LoaderCircleIcon className="animate-spin self-center" />
-            </CardHeader>
-          </Card>
-        )}
-        {quests.data?.length === 0 && (
-          <Card>
-            <CardHeader>
-              <span className="text-center">No side quest available</span>
-            </CardHeader>
-          </Card>
-        )}
-        {quests.data?.map((quest) => (
-          <SideQuestCard key={quest.id} quest={quest} />
-        ))}
-      </CardContent>
+      <AnimatePresence mode="wait">
+        <CardContent className="px-4">
+          {quests.isLoading && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Card>
+                <CardHeader className="flex items-center justify-center">
+                  <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+                </CardHeader>
+              </Card>
+            </motion.div>
+          )}
+          {!quests.isLoading && quests.data?.length === 0 && (
+            <motion.div
+              key="no-quests"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card>
+                <CardHeader>
+                  <span className="text-center text-muted-foreground">
+                    No side quest available
+                  </span>
+                </CardHeader>
+              </Card>
+            </motion.div>
+          )}
+          {!quests.isLoading && quests.data && quests.data.length > 0 && (
+            <motion.div
+              key="quests-list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-2"
+            >
+              {quests.data.map((quest, index) => (
+                <motion.div
+                  key={quest.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <SideQuestCard quest={quest} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </CardContent>
+      </AnimatePresence>
     </Card>
   );
 }
