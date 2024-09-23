@@ -1,3 +1,4 @@
+import { calculatePoints } from "@/lib/score";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -39,26 +40,27 @@ export const questRouter = createTRPCRouter({
       where: {
         userId: ctx.session.user.id,
         completedAt: { not: null },
-        proof: { not: null },
+        isPresent: { not: null },
       },
       include: {
         quest: true,
       },
     });
 
-    return quests.reduce((acc, quest) => {
-      return acc + (quest.quest.points ?? 0);
-    }, 0);
+    return quests.reduce(
+      (acc, quest) =>
+        acc + calculatePoints(
+          quest.quest.type,
+          quest.quest.isHandsOn,
+          quest.isActivelyParticipating,
+          quest.isPresent !== null),
+      0);
   }),
 
   getMaxScore: protectedProcedure.query(async ({ ctx }) => {
-    // Get the maximum score
     const quests = await ctx.db.quest.findMany();
 
-    return quests.reduce((acc, quest) => {
-      return acc + (quest.points ?? 0);
-    }, 0);
-
+    return quests.reduce((acc, quest) => acc + calculatePoints(quest.type, quest.isHandsOn, true, true), 0);
   }),
 
   takeQuest: protectedProcedure
@@ -106,7 +108,7 @@ export const questRouter = createTRPCRouter({
       image: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // Upload proof of quest completion
+      // Upload isPresent of quest completion
       return ctx.db.questEnrollment.update({
         where: {
           userId_questId: {
@@ -115,7 +117,7 @@ export const questRouter = createTRPCRouter({
           },
         },
         data: {
-          proof: input.image,
+          isPresent: input.image,
         },
       });
     }),

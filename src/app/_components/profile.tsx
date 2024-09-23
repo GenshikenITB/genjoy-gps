@@ -5,11 +5,47 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 
 export function Profile() {
   const { data: session } = useSession();
   const userScore = api.quest.getUserScore.useQuery();
   const maxScore = api.quest.getMaxScore.useQuery();
+
+  const [displayedScore, setDisplayedScore] = useState(0);
+  const previousScoreRef = useRef(0); // Store previous score across renders
+
+  useEffect(() => {
+    if (!userScore.isPending && userScore.data !== undefined) {
+      const newScore = userScore.data;
+      const previousScore = previousScoreRef.current;
+      const scoreDiff = newScore - previousScore;
+      const increment = scoreDiff / 50; // Controls animation smoothness
+
+      let currentScore = previousScore;
+
+      // Update the displayed score gradually
+      const timer = setInterval(() => {
+        currentScore += increment;
+        setDisplayedScore(() => {
+          if (
+            (increment > 0 && currentScore >= newScore) ||
+            (increment < 0 && currentScore <= newScore)
+          ) {
+            clearInterval(timer);
+            return newScore;
+          }
+          return currentScore;
+        });
+      }, 20);
+
+      // Store the new score for the next render cycle
+      previousScoreRef.current = newScore;
+
+      return () => clearInterval(timer);
+    }
+  }, [userScore.isPending, userScore.data]);
 
   let percentage = 0;
   if (userScore.data !== undefined && maxScore.data !== undefined) {
@@ -31,7 +67,7 @@ export function Profile() {
     colorClass = "text-green-300";
   }
 
-  if (!session || userScore.isPending || maxScore.isPending)
+  if (!session || userScore.isPending || maxScore.isPending) {
     return (
       <Card className="bg-secondary">
         <CardHeader className="p-4">
@@ -48,6 +84,7 @@ export function Profile() {
         </CardHeader>
       </Card>
     );
+  }
 
   return (
     <Card className="bg-secondary">
@@ -67,9 +104,14 @@ export function Profile() {
             <span className="text-sm font-light italic text-muted-foreground">
               {session?.user.email}
             </span>
-            <span className={`mt-3 text-2xl font-black ${colorClass}`}>
-              {userScore.data}/{maxScore.data} ppt
-            </span>
+            <motion.span
+              className={`mt-3 text-2xl font-black ${colorClass}`}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {displayedScore.toFixed(1)} ppt
+            </motion.span>
           </div>
         </div>
       </CardHeader>

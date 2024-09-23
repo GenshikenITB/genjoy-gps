@@ -8,8 +8,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Quest, QuestEnrollment } from "@prisma/client";
-import { CheckIcon, EyeIcon, TrashIcon, UploadIcon } from "lucide-react";
+import { QuestType, type Quest, type QuestEnrollment } from "@prisma/client";
+import {
+  CheckIcon,
+  EyeIcon,
+  GiftIcon,
+  SkullIcon,
+  TrashIcon,
+  UploadIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { UploadDropzone } from "@/utils/uploadthing";
 import Image from "next/image";
@@ -43,17 +50,18 @@ export function SideQuestCard({
           <span
             className={cn(
               "text-xs font-bold text-yellow-200",
-              enrollment?.proof && "text-green-300",
+              enrollment?.isPresent !== null && "text-green-300",
             )}
           >
-            {quest.points} points
+            {quest.type == QuestType.COMMUNITY ? "Community" : "Creative"} -{" "}
+            {quest.isHandsOn ? "Hands On" : "Non Hands On"}
           </span>
           <CardDescription>{quest.description}</CardDescription>
         </CardHeader>
         <div className="flex items-center justify-center gap-2 px-2">
           {isTaken ? (
             <>
-              {enrollment?.proof && (
+              {enrollment?.isPresent && (
                 <Button
                   onClick={() => setIsPreviewOpen(true)}
                   size="icon"
@@ -62,6 +70,7 @@ export function SideQuestCard({
                   <EyeIcon />
                 </Button>
               )}
+
               <Button
                 onClick={() => setIsDialogOpen(true)}
                 size="icon"
@@ -69,6 +78,22 @@ export function SideQuestCard({
               >
                 <UploadIcon />
               </Button>
+
+              <Button
+                size="icon"
+                variant={
+                  enrollment?.isActivelyParticipating
+                    ? "default"
+                    : "destructive"
+                }
+              >
+                {enrollment?.isActivelyParticipating ? (
+                  <GiftIcon />
+                ) : (
+                  <SkullIcon />
+                )}
+              </Button>
+
               <Button
                 onClick={async () => untake.mutateAsync(quest.id)}
                 size="icon"
@@ -139,7 +164,8 @@ export function SideQuestCard({
           </DialogHeader>
 
           <Image
-            src={enrollment?.proof ?? "/avatar.png"}
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            src={enrollment?.isPresent ?? "/avatar.png"}
             alt="Uploaded"
             width={400}
             height={400}

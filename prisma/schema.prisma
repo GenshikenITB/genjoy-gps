@@ -65,20 +65,27 @@ model Quest {
     id              String            @id @default(cuid())
     title           String
     description     String
-    points          Int
+    type            QuestType
+    isHandsOn       Boolean
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     QuestEnrollment QuestEnrollment[]
 }
 
 model QuestEnrollment {
-    id          String    @id @default(cuid())
-    userId      String
-    questId     String
-    proof       String?
-    completedAt DateTime?
-    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    quest       Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
+    id                      String    @id @default(cuid())
+    userId                  String
+    questId                 String
+    isPresent               String?
+    isActivelyParticipating Boolean   @default(false)
+    completedAt             DateTime?
+    user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    quest                   Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
 
     @@unique([userId, questId])
+}
+
+enum QuestType {
+    CREATIVE_ARTS
+    COMMUNITY
 }
