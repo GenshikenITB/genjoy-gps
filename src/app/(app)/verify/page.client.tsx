@@ -5,10 +5,11 @@ import { api } from "@/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoaderCircle } from "lucide-react";
 import { QuestCard } from "./card";
+import { useSortedItems } from "@/hooks/sort-query";
 
 export function VerifyClientPage() {
   const enrollments = api.mamet.getAllEnrollments.useQuery();
-  console.log(enrollments.data);
+  const sortedEnrollments = useSortedItems(enrollments.data, "id");
 
   return (
     <Card className="bg-secondary">
@@ -38,7 +39,7 @@ export function VerifyClientPage() {
               </Card>
             </motion.div>
           )}
-          {!enrollments.isLoading && enrollments.data?.length === 0 && (
+          {!enrollments.isLoading && sortedEnrollments.length === 0 && (
             <motion.div
               key="no-quests"
               initial={{ opacity: 0, y: 20 }}
@@ -55,28 +56,26 @@ export function VerifyClientPage() {
               </Card>
             </motion.div>
           )}
-          {!enrollments.isLoading &&
-            enrollments.data &&
-            enrollments.data.length > 0 && (
-              <motion.div
-                key="quests-list"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-2"
-              >
-                {enrollments.data.map((enrollment, index) => (
-                  <motion.div
-                    key={enrollment.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                  >
-                    <QuestCard enrollment={enrollment} />
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
+          {!enrollments.isLoading && sortedEnrollments.length > 0 && (
+            <motion.div
+              key="quests-list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-2"
+            >
+              {sortedEnrollments.map((enrollment, index) => (
+                <motion.div
+                  key={enrollment.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <QuestCard enrollment={enrollment} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </CardContent>
       </AnimatePresence>
     </Card>

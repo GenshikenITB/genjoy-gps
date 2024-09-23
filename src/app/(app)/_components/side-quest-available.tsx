@@ -5,9 +5,11 @@ import { SideQuestCard } from "./side-quest-card";
 import { api } from "@/trpc/react";
 import { LoaderCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSortedItems } from "@/hooks/sort-query";
 
 export function SideQuestAvailable() {
   const quests = api.quest.getAllNotTakenSideQuests.useQuery();
+  const sortedQuests = useSortedItems(quests.data, "createdAt");
 
   return (
     <Card className="bg-secondary">
@@ -37,7 +39,7 @@ export function SideQuestAvailable() {
               </Card>
             </motion.div>
           )}
-          {!quests.isLoading && quests.data?.length === 0 && (
+          {!quests.isLoading && sortedQuests?.length === 0 && (
             <motion.div
               key="no-quests"
               initial={{ opacity: 0, y: 20 }}
@@ -54,7 +56,7 @@ export function SideQuestAvailable() {
               </Card>
             </motion.div>
           )}
-          {!quests.isLoading && quests.data && quests.data.length > 0 && (
+          {!quests.isLoading && sortedQuests && sortedQuests.length > 0 && (
             <motion.div
               key="quests-list"
               initial={{ opacity: 0 }}
@@ -63,7 +65,7 @@ export function SideQuestAvailable() {
               transition={{ duration: 0.5 }}
               className="space-y-2"
             >
-              {quests.data.map((quest, index) => (
+              {sortedQuests.map((quest, index) => (
                 <motion.div
                   key={quest.id}
                   initial={{ opacity: 0, y: 20 }}

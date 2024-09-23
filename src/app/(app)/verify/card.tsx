@@ -8,15 +8,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Quest, QuestEnrollment, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
+import { useApprovePresence } from "@/hooks/approve-presence";
+import { useUnapprovePresence } from "@/hooks/unapprove-presence";
 
-export function QuestCard({
-  enrollment,
-}: {
-  enrollment: QuestEnrollment & { quest: Quest } & { user: User };
-}) {
+export type QuestCardProps = QuestEnrollment & {
+  quest: Quest;
+  user: User;
+};
+
+export function QuestCard({ enrollment }: { enrollment: QuestCardProps }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { quest, user, isActivelyParticipating, isPresent, completedAt } =
+  const { quest, user, isActivelyParticipating, isPresent, completedAt, id } =
     enrollment;
+
+  const approve = useApprovePresence(enrollment);
+  const unapprove = useUnapprovePresence(enrollment);
 
   return (
     <motion.div
@@ -136,9 +142,22 @@ export function QuestCard({
                 )}
                 <div className="mt-4 flex justify-end gap-2">
                   {isActivelyParticipating ? (
-                    <Button variant="destructive">Unapprove Presence</Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => unapprove.mutate(id)}
+                      disabled={unapprove.isPending}
+                    >
+                      {unapprove.isPending
+                        ? "Unapproving..."
+                        : "Unapprove Presence"}
+                    </Button>
                   ) : (
-                    <Button>Approve Presence</Button>
+                    <Button
+                      onClick={() => approve.mutate(id)}
+                      disabled={approve.isPending}
+                    >
+                      {approve.isPending ? "Approving..." : "Approve Presence"}
+                    </Button>
                   )}
                 </div>
               </motion.div>

@@ -12,25 +12,36 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             const prevTakenQuests = utils.quest.getAllTakenSideQuests.getData();
 
             utils.quest.getAllNotTakenSideQuests.setData(undefined, (old) =>
-                (old ?? []).filter((q) => q.id !== id),
+                old ? old.filter((q) => q.id !== id) : []
             );
-            utils.quest.getAllTakenSideQuests.setData(undefined, (old) => [
-                ...(old ?? []),
-                { quest: { ...quest }, id, userId: '', questId: '', isActivelyParticipating: false, isPresent: null, completedAt: null },
-            ]);
-
+            utils.quest.getAllTakenSideQuests.setData(undefined, (old) => {
+                const newQuest = {
+                    quest: { ...quest },
+                    id,
+                    userId: '',
+                    questId: '',
+                    isActivelyParticipating: false,
+                    isPresent: null,
+                    completedAt: null
+                };
+                return old ? [...old, newQuest] : [newQuest];
+            });
 
             return { prevNotTakenQuests, prevTakenQuests };
         },
         onError: (err, id, ctx) => {
-            utils.quest.getAllNotTakenSideQuests.setData(
-                undefined,
-                ctx?.prevNotTakenQuests,
-            );
-            utils.quest.getAllTakenSideQuests.setData(
-                undefined,
-                ctx?.prevTakenQuests,
-            );
+            if (ctx?.prevNotTakenQuests !== undefined) {
+                utils.quest.getAllNotTakenSideQuests.setData(
+                    undefined,
+                    ctx.prevNotTakenQuests
+                );
+            }
+            if (ctx?.prevTakenQuests !== undefined) {
+                utils.quest.getAllTakenSideQuests.setData(
+                    undefined,
+                    ctx.prevTakenQuests
+                );
+            }
         },
         onSuccess: async () => {
             await utils.quest.getAllNotTakenSideQuests.invalidate();

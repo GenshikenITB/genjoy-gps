@@ -5,9 +5,11 @@ import { SideQuestCard } from "./side-quest-card";
 import { api } from "@/trpc/react";
 import { LoaderCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSortedItems } from "@/hooks/sort-query";
 
 export function SideQuestTaken() {
   const enrollment = api.quest.getAllTakenSideQuests.useQuery();
+  const sortedEnrollments = useSortedItems(enrollment.data, "completedAt");
 
   return (
     <Card className="bg-secondary">
@@ -37,9 +39,9 @@ export function SideQuestTaken() {
               </Card>
             </motion.div>
           )}
-          {!enrollment.isLoading && enrollment.data?.length === 0 && (
+          {!enrollment.isLoading && sortedEnrollments.length === 0 && (
             <motion.div
-              key="no-quests"
+              key="no-enroll"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -55,17 +57,17 @@ export function SideQuestTaken() {
             </motion.div>
           )}
           {!enrollment.isLoading &&
-            enrollment.data &&
-            enrollment.data.length > 0 && (
+            sortedEnrollments &&
+            sortedEnrollments.length > 0 && (
               <motion.div
-                key="quests-list"
+                key="enroll-list"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
                 className="space-y-2"
               >
-                {enrollment.data.map((enroll, index) => (
+                {sortedEnrollments.map((enroll, index) => (
                   <motion.div
                     key={enroll.id}
                     initial={{ opacity: 0, y: 20 }}

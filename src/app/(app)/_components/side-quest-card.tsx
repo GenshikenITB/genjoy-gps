@@ -1,7 +1,7 @@
 "use client";
 
-import { useTakeQuest } from "@/components/hooks/take-quest";
-import { useUntakeQuest } from "@/components/hooks/untake-quest";
+import { useTakeQuest } from "@/hooks/take-quest";
+import { useUntakeQuest } from "@/hooks/untake-quest";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import {
@@ -23,7 +23,7 @@ import {
 import { useState } from "react";
 import { UploadDropzone } from "@/utils/uploadthing";
 import Image from "next/image";
-import { useUploadProofQuest } from "@/components/hooks/upload-proof-quest";
+import { useUploadProofQuest } from "@/hooks/upload-proof-quest";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
