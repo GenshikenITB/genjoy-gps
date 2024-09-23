@@ -52,7 +52,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TRPCReactProvider>
-              <div className="h-screen w-full max-w-xl p-5">{children}</div>
+              <div className="min-h-screen w-full max-w-xl p-5">{children}</div>
             </TRPCReactProvider>
           </ThemeProvider>
         </AuthProvider>

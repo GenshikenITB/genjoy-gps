@@ -2,11 +2,13 @@
 
 import { Card, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { LogOutIcon } from "lucide-react";
 
 export function Profile() {
   const { data: session } = useSession();
@@ -87,34 +89,44 @@ export function Profile() {
   }
 
   return (
-    <Card className="bg-secondary">
-      <CardHeader className="p-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative h-24 w-24 flex-grow-0 rounded bg-gray-600">
-            <Image
-              src={session?.user.image ?? "/avatar.png"}
-              alt="Profile Picture"
-              layout="fill"
-              objectFit="cover"
-              className="rounded"
-            />
+    <>
+      <Card className="bg-secondary">
+        <CardHeader className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative h-24 w-24 flex-grow-0 rounded bg-gray-600">
+              <Image
+                src={session?.user.image ?? "/avatar.png"}
+                alt="Profile Picture"
+                layout="fill"
+                objectFit="cover"
+                className="rounded"
+              />
+            </div>
+            <div className="flex h-full flex-col justify-center text-right">
+              <span className="text-lg font-bold">{session?.user.name}</span>
+              <span className="text-sm font-light italic text-muted-foreground">
+                {session?.user.email}
+              </span>
+              <motion.span
+                className={`mt-3 text-2xl font-black ${colorClass}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {displayedScore.toFixed(1)} ppt
+              </motion.span>
+            </div>
           </div>
-          <div className="flex h-full flex-col justify-center text-right">
-            <span className="text-lg font-bold">{session?.user.name}</span>
-            <span className="text-sm font-light italic text-muted-foreground">
-              {session?.user.email}
-            </span>
-            <motion.span
-              className={`mt-3 text-2xl font-black ${colorClass}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              {displayedScore.toFixed(1)} ppt
-            </motion.span>
-          </div>
-        </div>
-      </CardHeader>
-    </Card>
+        </CardHeader>
+      </Card>
+      <Button
+        variant="destructive"
+        onClick={() => signOut()}
+        className="space-x-2"
+      >
+        <span>Sign Out</span>
+        <LogOutIcon size={15} />
+      </Button>
+    </>
   );
 }
