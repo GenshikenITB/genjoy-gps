@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { api } from "@/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoaderCircle } from "lucide-react";
-import { VerifyCard } from "./card";
+import { VerifyCard } from "./verify-card";
 import { useSortedItems } from "@/hooks/sort-query";
 
 export function VerifyClientPage() {

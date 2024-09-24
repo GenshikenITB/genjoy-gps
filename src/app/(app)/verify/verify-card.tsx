@@ -158,7 +158,7 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
                     </div>
                   </>
                 )}
-                <div className="mt-4 flex w-full justify-end gap-2">
+                <div className="mt-4 flex w-full flex-col justify-end gap-2 sm:flex-row">
                   {isPresentVerified ? (
                     <Button
                       variant="destructive"

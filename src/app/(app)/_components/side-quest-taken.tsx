@@ -74,11 +74,7 @@ export function SideQuestTaken() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <SideQuestCard
-                      quest={enroll.quest}
-                      enrollment={enroll}
-                      isTaken
-                    />
+                    <SideQuestCard quest={enroll.quest} enrollment={enroll} />
                   </motion.div>
                 ))}
               </motion.div>

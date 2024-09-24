@@ -14,7 +14,7 @@ export default async function SignIn() {
   const providers = await getProviders();
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 px-5">
+    <>
       <div className="flex flex-col items-center">
         <Image
           src="/genlogo-dark.svg"
@@ -30,6 +30,6 @@ export default async function SignIn() {
         Object.values(providers).map((provider) => (
           <SignInButton key={provider.name} provider={provider} />
         ))}
-    </div>
+    </>
   );
 }

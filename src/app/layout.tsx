@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "flex min-h-screen flex-col items-center bg-background font-sans antialiased",
+          "flex flex-col items-center bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
@@ -48,7 +48,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >

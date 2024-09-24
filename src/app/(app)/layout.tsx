@@ -5,7 +5,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="flex min-h-screen w-full max-w-xl flex-col gap-5 p-5">
+    <div className="flex min-h-[100svh] w-full max-w-xl flex-col gap-5 p-5">
       <Navbar />
       {children}
     </div>

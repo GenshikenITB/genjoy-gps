@@ -1,40 +1,40 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import {
+  CheckIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+  UploadIcon,
+} from "lucide-react";
 import { useTakeQuest } from "@/hooks/take-quest";
 import { useUntakeQuest } from "@/hooks/untake-quest";
+import { useUploadProofQuest } from "@/hooks/upload-proof-quest";
+import { useDeleteQuest } from "@/hooks/delete-quest";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { QuestType, type Quest, type QuestEnrollment } from "@prisma/client";
-import {
-  CheckIcon,
-  EyeIcon,
-  MoreVerticalIcon,
-  PencilIcon,
-  TrashIcon,
-  UploadIcon,
-} from "lucide-react";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { UploadDropzone } from "@/utils/uploadthing";
-import Image from "next/image";
-import { useUploadProofQuest } from "@/hooks/upload-proof-quest";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useDeleteQuest } from "@/hooks/delete-quest";
+import type { Quest, QuestEnrollment } from "@prisma/client";
 
 export function SideQuestCard({
-  isTaken = false,
   isMamet = false,
   openDialog,
   quest,
@@ -57,42 +57,6 @@ export function SideQuestCard({
 
   if (!quest) return null;
 
-  const ActionButtons = () => (
-    <>
-      {isTaken ? (
-        <>
-          {enrollment?.isPresent && (
-            <Button
-              onClick={() => setIsPreviewOpen(true)}
-              size="icon"
-              variant="outline"
-            >
-              <EyeIcon className="h-4 w-4" />
-            </Button>
-          )}
-          <Button
-            onClick={() => setIsDialogOpen(true)}
-            size="icon"
-            variant="secondary"
-          >
-            <UploadIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            onClick={async () => untake.mutateAsync(quest.id)}
-            size="icon"
-            variant="destructive"
-          >
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </>
-      ) : (
-        <Button onClick={async () => take.mutateAsync(quest.id)} size="icon">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-      )}
-    </>
-  );
-
   return (
     <>
       <motion.div
@@ -101,85 +65,106 @@ export function SideQuestCard({
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="flex justify-between">
-          <CardHeader className="p-2">
-            <span className="font-bold">{quest.title}</span>
-            <span
-              className={cn(
-                "text-xs font-bold text-yellow-200",
-                enrollment?.isPresent !== null && "text-green-300",
-              )}
-            >
-              {quest.type == QuestType.COMMUNITY ? "Community" : "Creative"} -{" "}
-              {quest.isHandsOn ? "Hands On" : "Non Hands On"}
-            </span>
-            <CardDescription>{quest.description}</CardDescription>
+        <Card className="overflow-hidden">
+          <CardHeader className="p-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">{quest.title}</CardTitle>
+              <Badge
+                variant={quest.type === "COMMUNITY" ? "default" : "secondary"}
+              >
+                {quest.type}
+              </Badge>
+            </div>
           </CardHeader>
-          <div className="flex items-center justify-center px-2">
-            {!isMamet &&
-              (isTaken ? (
-                <>
-                  <div className="hidden items-center gap-2 sm:flex">
-                    <ActionButtons />
-                  </div>
-                  <div className="sm:hidden">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVerticalIcon className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => setIsPreviewOpen(true)}
-                        >
-                          Preview
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-                          Upload
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={async () => untake.mutateAsync(quest.id)}
-                        >
-                          Untake Quest
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </>
-              ) : (
-                <Button
-                  onClick={async () => take.mutateAsync(quest.id)}
-                  size="icon"
-                >
-                  <CheckIcon className="h-4 w-4" />
-                </Button>
-              ))}
-
-            {isMamet && (
-              <div className="flex gap-2">
+          <CardContent className="p-4 pt-0">
+            <CardDescription>{quest.description}</CardDescription>
+          </CardContent>
+          <CardFooter className="flex-col space-y-2 p-4 pt-0 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">
+            {isMamet ? (
+              <div className="flex w-full flex-col space-y-2 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">
                 <Button
                   onClick={() => openDialog?.(quest)}
-                  size="icon"
+                  size="sm"
                   variant="outline"
+                  className="w-full sm:w-auto"
                 >
-                  <PencilIcon className="h-4 w-4" />
+                  <PencilIcon className="mr-2 h-4 w-4" />
+                  Edit
                 </Button>
                 <Button
                   onClick={() => remove.mutate(quest.id)}
-                  size="icon"
+                  size="sm"
                   variant="destructive"
+                  className="w-full sm:w-auto"
                 >
-                  <TrashIcon className="h-4 w-4" />
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Delete
                 </Button>
               </div>
+            ) : enrollment ? (
+              <div className="flex w-full flex-col space-y-2 sm:flex-row sm:justify-between sm:space-x-2 sm:space-y-0">
+                <div className="flex w-full flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
+                  <div className="flex w-full gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(true)}
+                      className="w-full sm:w-auto"
+                    >
+                      <UploadIcon className="mr-2 h-4 w-4" />
+                      Upload Proof
+                    </Button>
+                    {enrollment.isPresent && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsPreviewOpen(true)}
+                        className="w-full sm:w-auto"
+                      >
+                        <EyeIcon className="mr-2 h-4 w-4" />
+                        Preview
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex w-full items-center justify-between gap-2">
+                    {enrollment.isPresentVerified !== null && (
+                      <Badge
+                        className={cn(
+                          enrollment.isPresentVerified
+                            ? "bg-secondary text-foreground"
+                            : "bg-yellow-500",
+                          "h-fit w-fit",
+                        )}
+                      >
+                        {enrollment.isPresentVerified ? "Approved" : "Pending"}
+                      </Badge>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => untake.mutate(quest.id)}
+                    >
+                      Untake
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                className="w-full"
+                onClick={() => take.mutate(quest.id)}
+              >
+                <CheckIcon className="mr-2 h-4 w-4" />
+                Take Quest
+              </Button>
             )}
-          </div>
+          </CardFooter>
         </Card>
       </motion.div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[400px] rounded-xl">
+        <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
             <DialogTitle>Upload Image</DialogTitle>
           </DialogHeader>
@@ -197,12 +182,7 @@ export function SideQuestCard({
               }}
             />
           ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-            >
+            <>
               <Image
                 src={image ?? "/avatar.png"}
                 alt="Uploaded"
@@ -223,37 +203,32 @@ export function SideQuestCard({
               >
                 {upload.isPending ? "Loading..." : "Submit Bukti"}
               </Button>
-            </motion.div>
+            </>
           )}
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-[400px] rounded-xl">
+        <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
             <DialogTitle>Preview</DialogTitle>
           </DialogHeader>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className="relative aspect-square w-full overflow-hidden rounded-lg">
             <Image
               src={enrollment?.isPresent ?? "/avatar.png"}
               alt="Uploaded"
-              width={400}
-              height={400}
-              objectFit="contain"
-              className="rounded-lg"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
             />
-            <Button
-              onClick={() => setIsPreviewOpen(false)}
-              className="mt-4 w-full"
-            >
-              Close
-            </Button>
-          </motion.div>
+          </div>
+          <Button
+            onClick={() => setIsPreviewOpen(false)}
+            className="mt-4 w-full"
+          >
+            Close
+          </Button>
         </DialogContent>
       </Dialog>
     </>
