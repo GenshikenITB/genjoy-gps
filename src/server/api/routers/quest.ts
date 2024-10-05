@@ -86,14 +86,18 @@ export const questRouter = createTRPCRouter({
     }),
 
   untakeQuest: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ ctx, input: id }) => {
-      // Mark a quest as not completed by the user
+    .input(z.object({
+      id: z.string(),
+      userId: z.string(),
+    })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Untake a quest
       return ctx.db.questEnrollment.update({
         where: {
           userId_questId: {
-            userId: ctx.session.user.id,
-            questId: id,
+            userId: input.userId,
+            questId: input.id,
           },
         },
         data: {

@@ -9,9 +9,9 @@ import {
   PencilIcon,
   TrashIcon,
   UploadIcon,
+  InfoIcon,
 } from "lucide-react";
 import { useTakeQuest } from "@/hooks/take-quest";
-import { useUntakeQuest } from "@/hooks/untake-quest";
 import { useUploadProofQuest } from "@/hooks/upload-proof-quest";
 import { useDeleteQuest } from "@/hooks/delete-quest";
 import { Button } from "@/components/ui/button";
@@ -28,11 +28,19 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { UploadDropzone } from "@/utils/uploadthing";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Quest, QuestEnrollment } from "@prisma/client";
+import React from "react";
 
 export function SideQuestCard({
   isMamet = false,
@@ -48,12 +56,21 @@ export function SideQuestCard({
 }) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isTakeQuestAlertOpen, setIsTakeQuestAlertOpen] = useState(false);
   const [image, setImage] = useState<string | null | undefined>(null);
 
   const take = useTakeQuest({ quest: quest! });
-  const untake = useUntakeQuest({ quest: quest! });
   const upload = useUploadProofQuest({ setIsDialogOpen });
   const remove = useDeleteQuest();
+
+  const handleTakeQuest = () => {
+    setIsTakeQuestAlertOpen(true);
+  };
+
+  const confirmTakeQuest = () => {
+    setIsTakeQuestAlertOpen(false);
+    take.mutate(quest!.id);
+  };
 
   if (!quest) return null;
 
@@ -139,22 +156,27 @@ export function SideQuestCard({
                         {enrollment.isPresentVerified ? "Approved" : "Pending"}
                       </Badge>
                     )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => untake.mutate(quest.id)}
-                    >
-                      Untake
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button size="sm" variant="ghost">
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="w-[200px] text-balance text-center">
+                            Jika anda berhalangan untuk menyelesaikan quest ini,
+                            hubungi mentor untuk meminta pembatalan pengambilan
+                            quest.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>
             ) : (
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={() => take.mutate(quest.id)}
-              >
+              <Button size="sm" className="w-full" onClick={handleTakeQuest}>
                 <CheckIcon className="mr-2 h-4 w-4" />
                 Take Quest
               </Button>
@@ -229,6 +251,31 @@ export function SideQuestCard({
           >
             Close
           </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isTakeQuestAlertOpen}
+        onOpenChange={setIsTakeQuestAlertOpen}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Pengambilan Quest</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>
+              Jika kamu mengambil quest ini, kamu harus wajib menyelesaikannya.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsTakeQuestAlertOpen(false)}
+            >
+              Batalkan
+            </Button>
+            <Button onClick={confirmTakeQuest}>Ambil</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

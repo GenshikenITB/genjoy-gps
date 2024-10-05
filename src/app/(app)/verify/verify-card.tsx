@@ -12,6 +12,7 @@ import { useVerifyPresence } from "@/hooks/verify-presence";
 import { useUnverifyPresence } from "@/hooks/unverify-presence";
 import { useApproveParticipation } from "@/hooks/approve-participation";
 import { useUnapproveParticipation } from "@/hooks/unapprove-participation";
+import { useUntakeQuest } from "@/hooks/untake-quest";
 
 export type VerifyCard = QuestEnrollment & {
   quest: Quest;
@@ -34,6 +35,7 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
   const unverifyPresence = useUnverifyPresence();
   const approveParticipation = useApproveParticipation();
   const unapproveParticipation = useUnapproveParticipation();
+  const untakeQuest = useUntakeQuest();
 
   return (
     <motion.div
@@ -129,7 +131,7 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
                     </span>
                   </div>
                   <div className="text-right text-sm">
-                    Completed:{" "}
+                    Taken at:{" "}
                     {completedAt
                       ? new Date(completedAt).toLocaleDateString()
                       : "N/A"}
@@ -158,7 +160,25 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
                     </div>
                   </>
                 )}
-                <div className="mt-4 flex w-full flex-col justify-end gap-2 sm:flex-row">
+                {completedAt ? (
+                  <Button
+                    onClick={() =>
+                      untakeQuest.mutate({
+                        id: quest.id,
+                        userId: user.id,
+                      })
+                    }
+                    disabled={untakeQuest.isPending}
+                    className="mt-4 w-full"
+                  >
+                    {untakeQuest.isPending ? "Untaking..." : "Untake Quest"}
+                  </Button>
+                ) : (
+                  <Button disabled className="mt-4 w-full">
+                    User is not taking the quest.
+                  </Button>
+                )}
+                <div className="mt-2 flex w-full flex-col justify-end gap-2 sm:flex-row">
                   {isPresentVerified ? (
                     <Button
                       variant="destructive"
