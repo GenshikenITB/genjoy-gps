@@ -3,6 +3,7 @@ import { getProviders } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { SignInButton } from "./page.client";
 import Image from "next/image";
+import React from "react";
 
 export default async function SignIn() {
   const session = await getServerAuthSession();
@@ -14,8 +15,8 @@ export default async function SignIn() {
   const providers = await getProviders();
 
   return (
-    <>
-      <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center space-y-6 p-8">
+      <div className="flex flex-col items-center space-y-2">
         <Image
           src="/genlogo-dark.svg"
           width={180}
@@ -26,10 +27,13 @@ export default async function SignIn() {
           Start your Genshiken Journey now!
         </span>
       </div>
-      {providers &&
-        Object.values(providers).map((provider) => (
-          <SignInButton key={provider.name} provider={provider} />
-        ))}
-    </>
+
+      <div className="flex w-full max-w-sm justify-center space-y-4">
+        {providers &&
+          Object.values(providers).map((provider) => (
+            <SignInButton key={provider.name} provider={provider} />
+          ))}
+      </div>
+    </div>
   );
 }

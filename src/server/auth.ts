@@ -31,6 +31,12 @@ declare module "next-auth" {
   }
 }
 
+interface DiscordMemberData {
+  message?: string;
+  roles?: string[];
+}
+
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -39,12 +45,59 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
-    error: "/error",
+    error: "/login",
   },
   session: {
     strategy: "database"
   },
   callbacks: {
+    signIn: async ({ account }) => {
+      const discordGuildId = "1279807678666772610";
+      const requiredRoles = [
+        "1279817638708772986",
+        "1279817589878689856"
+      ];
+      const discordApiUrl = `https://discord.com/api/v10/users/@me/guilds/${discordGuildId}/member`;
+      const headers = {
+        Authorization: `${account?.token_type} ${account?.access_token}`,
+      };
+
+      try {
+        const response = await fetch(discordApiUrl, { headers });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Unauthorized: Invalid token or permissions');
+          } else if (response.status === 403) {
+            throw new Error('Forbidden: Access denied to the guild');
+          } else if (response.status === 404) {
+            throw new Error('Not Found: You are not in the required server');
+          } else {
+            throw new Error(`Discord API request failed: ${response.status} ${response.statusText}`);
+          }
+        }
+
+        const memberData = await response.json() as DiscordMemberData;
+
+        // Check if the user has the required role
+        const hasRequiredRole = requiredRoles.some((role) =>
+          memberData.roles?.includes(role.trim()) ?? false
+        );
+
+        if (!hasRequiredRole) {
+          throw new Error('Forbidden: User does not have the required roles');
+        }
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        } else {
+          throw new Error('Error while checking user roles: Unknown error');
+        }
+      }
+    },
     session: ({ session, user }) => ({
       ...session,
       user: {
@@ -59,6 +112,11 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: 'identify email guilds guilds.members.read',
+        },
+      },
     }),
     /**
      * ...add more providers here.
