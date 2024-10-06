@@ -35,11 +35,16 @@ export function VerifyClientPage() {
     let matchesTab = true;
     switch (filterTab) {
       case "UNVERIFIED":
-        matchesTab = !!enrollment.completedAt && !enrollment.isPresentVerified;
+        matchesTab =
+          !!enrollment.completedAt &&
+          !enrollment.isPresentVerified &&
+          !!enrollment.isPresent;
         break;
       case "UNAPPROVED":
         matchesTab =
-          !!enrollment.completedAt && !enrollment.isActivelyParticipating;
+          !!enrollment.completedAt &&
+          !enrollment.isActivelyParticipating &&
+          !!enrollment.isPresent;
         break;
       case "TAKING":
         matchesTab = !!enrollment.completedAt;
