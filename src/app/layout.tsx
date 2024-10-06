@@ -23,6 +23,25 @@ export const metadata: Metadata = {
   title: "GenJourney",
   description: "Start your Genshiken Journey now!",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  openGraph: {
+    url: "https://genjourney.genshiken-itb.org/",
+    siteName: "GenJourney",
+    images: [
+      {
+        url: "https://genjourney.genshiken-itb.org/og.png",
+        width: 1200,
+        height: 630,
+      },
+      {
+        url: "https://genjourney.genshiken-itb.org/og.png",
+        width: 1200,
+        height: 630,
+        alt: "og",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
