@@ -59,7 +59,7 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
             <div className="flex items-center space-x-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage
-                  src={user.image ?? "/default-avatar.png"}
+                  src={user.image ?? "/default-404.png"}
                   alt={user.name ?? "Unknown User"}
                 />
                 <AvatarFallback>

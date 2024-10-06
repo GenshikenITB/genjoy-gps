@@ -103,7 +103,7 @@ export function Profile() {
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
               >
                 <Image
-                  src={session?.user.image ?? "/avatar.png"}
+                  src={session?.user.image ?? "/404.png"}
                   alt="Profile Picture"
                   layout="fill"
                   objectFit="cover"

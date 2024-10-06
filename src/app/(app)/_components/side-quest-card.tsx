@@ -202,14 +202,16 @@ export function SideQuestCard({
             />
           ) : (
             <>
-              <Image
-                src={image ?? "/avatar.png"}
-                alt="Uploaded"
-                width={400}
-                height={400}
-                objectFit="contain"
-                className="rounded-lg"
-              />
+              <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+                <Image
+                  src={image ?? "/404.png"}
+                  alt="Uploaded"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority
+                />
+              </div>
               <Button
                 onClick={async () =>
                   upload.mutateAsync({
@@ -234,7 +236,7 @@ export function SideQuestCard({
           </DialogHeader>
           <div className="relative aspect-square w-full overflow-hidden rounded-lg">
             <Image
-              src={enrollment?.isPresent ?? "/avatar.png"}
+              src={enrollment?.isPresent ?? "/404.png"}
               alt="Uploaded"
               fill
               className="object-contain"
