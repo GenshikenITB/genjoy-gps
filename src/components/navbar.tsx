@@ -9,6 +9,7 @@ import { LogOutIcon, Menu, X } from "lucide-react";
 import { Role } from "@prisma/client";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 
 export function Navbar() {
   const session = useSession();
@@ -26,6 +27,20 @@ export function Navbar() {
           <Link href="/add-quest">
             <Button variant="ghost" size="sm">
               <span>Add Quest</span>
+            </Button>
+          </Link>
+          <Link href="/verify">
+            <Button variant="ghost" size="sm">
+              <span>Verify</span>
+            </Button>
+          </Link>
+        </div>
+      )}
+      {session.data?.user.role === Role.MENTOR && (
+        <div className="flex flex-col items-start gap-1 md:flex-row md:items-center">
+          <Link href="/">
+            <Button variant="ghost" size="sm">
+              <span>Homepage</span>
             </Button>
           </Link>
           <Link href="/verify">
@@ -59,7 +74,7 @@ export function Navbar() {
               alt="Genshiken"
             />
           </Link>
-          <div className="hidden md:flex md:items-center md:gap-5">
+          <div className="hidden w-full justify-between md:flex md:items-center md:gap-5">
             <NavItems />
           </div>
         </div>

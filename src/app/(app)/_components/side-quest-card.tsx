@@ -34,11 +34,10 @@ import { Badge } from "@/components/ui/badge";
 import { UploadDropzone } from "@/utils/uploadthing";
 import { cn } from "@/lib/utils";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import type { Quest, QuestEnrollment } from "@prisma/client";
 import React from "react";
 
@@ -156,22 +155,20 @@ export function SideQuestCard({
                         {enrollment.isPresentVerified ? "Approved" : "Pending"}
                       </Badge>
                     )}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button size="sm" variant="ghost">
-                            <InfoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="w-[200px] text-balance text-center">
-                            Jika anda berhalangan untuk menyelesaikan quest ini,
-                            hubungi mentor untuk meminta pembatalan pengambilan
-                            quest.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button size="sm" variant="ghost">
+                          <InfoIcon className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px]">
+                        <p className="text-balance text-center text-xs">
+                          Jika anda berhalangan untuk menyelesaikan quest ini,
+                          hubungi mentor untuk meminta pembatalan pengambilan
+                          quest.
+                        </p>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
