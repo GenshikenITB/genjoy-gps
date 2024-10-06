@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/popover";
 import type { Quest, QuestEnrollment } from "@prisma/client";
 import React from "react";
+import { useSession } from "next-auth/react";
 
 export function SideQuestCard({
   isMamet = false,
@@ -57,6 +58,7 @@ export function SideQuestCard({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isTakeQuestAlertOpen, setIsTakeQuestAlertOpen] = useState(false);
   const [image, setImage] = useState<string | null | undefined>(null);
+  const { data: session } = useSession();
 
   const take = useTakeQuest({ quest: quest! });
   const upload = useUploadProofQuest({ setIsDialogOpen });
@@ -68,7 +70,12 @@ export function SideQuestCard({
 
   const confirmTakeQuest = () => {
     setIsTakeQuestAlertOpen(false);
-    take.mutate(quest!.id);
+    if (session) {
+      take.mutate({
+        id: quest!.id,
+        userId: session.user.id,
+      });
+    }
   };
 
   if (!quest) return null;
@@ -120,7 +127,7 @@ export function SideQuestCard({
             ) : enrollment ? (
               <div className="flex w-full flex-col space-y-2 sm:flex-row sm:justify-between sm:space-x-2 sm:space-y-0">
                 <div className="flex w-full flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
-                  <div className="flex w-full gap-2">
+                  <div className="flex w-fit gap-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -135,7 +142,12 @@ export function SideQuestCard({
                         size="sm"
                         variant="outline"
                         onClick={() => setIsPreviewOpen(true)}
-                        className="w-full sm:w-auto"
+                        className={cn(
+                          enrollment.isPresentVerified
+                            ? "border-green-500 text-green-500"
+                            : "border-yellow-500 text-yellow-500",
+                          "w-full sm:w-auto",
+                        )}
                       >
                         <EyeIcon className="mr-2 h-4 w-4" />
                         Preview
@@ -143,18 +155,22 @@ export function SideQuestCard({
                     )}
                   </div>
                   <div className="flex w-full items-center justify-between gap-2">
-                    {enrollment.isPresentVerified !== null && (
-                      <Badge
-                        className={cn(
-                          enrollment.isPresentVerified
-                            ? "bg-secondary text-foreground"
-                            : "bg-yellow-500",
-                          "h-fit w-fit",
-                        )}
-                      >
-                        {enrollment.isPresentVerified ? "Approved" : "Pending"}
-                      </Badge>
-                    )}
+                    <Badge
+                      className={cn(
+                        enrollment.isActivelyParticipating === null
+                          ? "bg-yellow-500"
+                          : enrollment.isActivelyParticipating
+                            ? "bg-green-500"
+                            : "bg-red-500",
+                        "h-fit w-fit",
+                      )}
+                    >
+                      {enrollment.isActivelyParticipating === null
+                        ? "Pending Participation"
+                        : enrollment.isActivelyParticipating
+                          ? "Participation Approved"
+                          : "Participation Declined"}
+                    </Badge>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button size="sm" variant="ghost">
@@ -232,7 +248,20 @@ export function SideQuestCard({
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
-            <DialogTitle>Preview</DialogTitle>
+            <DialogTitle className="flex items-center justify-start gap-2">
+              <span>Preview</span>
+              <Badge
+                className={
+                  enrollment?.isPresentVerified
+                    ? "bg-green-500"
+                    : "bg-yellow-500"
+                }
+              >
+                {enrollment?.isPresentVerified
+                  ? "Presence Verified"
+                  : "Pending Verification"}
+              </Badge>
+            </DialogTitle>
           </DialogHeader>
           <div className="relative aspect-square w-full overflow-hidden rounded-lg">
             <Image

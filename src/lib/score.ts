@@ -3,8 +3,9 @@ import { QuestType } from "@prisma/client";
 export const calculatePoints = (
     type: string,
     isHandsOn: boolean,
-    isActivelyParticipating: boolean,
+    isActivelyParticipating: boolean | null,
     isPresentVerified: boolean,
+    isPresent: string | null,
     fixedPtsBidang = 10,
     fixedPtsComun = 5,
 ): number => {
@@ -17,13 +18,19 @@ export const calculatePoints = (
 
     const baseValue = basePointsMap[type] ?? 0;
 
-    // If the participant did not show up, deduct base points
-    if (!isPresentVerified) {
+    // If the participant submitted proof, make it 0 points
+    // because the participant haven't been verified
+    if (isPresent && isActivelyParticipating === null) {
+        return 0;
+    }
+
+    // If the participant is verified as not present, deduct base points
+    if (!isActivelyParticipating) {
         return -baseValue;
     }
 
     // If the participant is not active, no points
-    if (!isActivelyParticipating) {
+    if (!isPresentVerified) {
         return 0;
     }
 
@@ -32,6 +39,7 @@ export const calculatePoints = (
     if (isHandsOn) {
         totalPoints += baseValue * 0.5;
     }
+
 
     return totalPoints;
 };

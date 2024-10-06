@@ -53,34 +53,39 @@ export const questRouter = createTRPCRouter({
           quest.quest.type,
           quest.quest.isHandsOn,
           quest.isActivelyParticipating,
-          quest.isPresentVerified),
+          quest.isPresentVerified,
+          quest.isPresent),
       0);
   }),
 
   getMaxScore: protectedProcedure.query(async ({ ctx }) => {
     const quests = await ctx.db.quest.findMany();
 
-    return quests.reduce((acc, quest) => acc + calculatePoints(quest.type, quest.isHandsOn, true, true), 0);
+    return quests.reduce((acc, quest) => acc + calculatePoints(quest.type, quest.isHandsOn, true, true, "true"), 0);
   }),
 
   takeQuest: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ ctx, input: id }) => {
+    .input(z.object({
+      id: z.string(),
+      userId: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
       // Mark a quest as completed by the user
       return ctx.db.questEnrollment.upsert({
         where: {
           userId_questId: {
-            userId: ctx.session.user.id,
-            questId: id,
+            userId: input.userId,
+            questId: input.id,
           },
         },
         update: {
           completedAt: new Date(),
         },
         create: {
-          userId: ctx.session.user.id,
-          questId: id,
+          userId: input.userId,
+          questId: input.id,
           completedAt: new Date(),
+          isActivelyParticipating: null
         },
       });
     }),

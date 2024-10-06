@@ -125,13 +125,13 @@ export function VerifyClientPage() {
                 className="data-[state=active]:bg-secondary"
                 value="UNVERIFIED"
               >
-                Unverified
+                Presence
               </TabsTrigger>
               <TabsTrigger
                 className="data-[state=active]:bg-secondary"
                 value="UNAPPROVED"
               >
-                Unapproved
+                Participation
               </TabsTrigger>
             </TabsList>
           </Tabs>

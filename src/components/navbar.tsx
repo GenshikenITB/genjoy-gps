@@ -74,7 +74,7 @@ export function Navbar() {
               alt="Genshiken"
             />
           </Link>
-          <div className="hidden w-full justify-between md:flex md:items-center md:gap-5">
+          <div className="hidden w-full justify-end md:flex md:items-center md:gap-5">
             <NavItems />
           </div>
         </div>

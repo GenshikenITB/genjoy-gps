@@ -12,15 +12,15 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             const prevTakenQuests = utils.quest.getAllTakenSideQuests.getData();
 
             utils.quest.getAllNotTakenSideQuests.setData(undefined, (old) =>
-                old ? old.filter((q) => q.id !== id) : []
+                old ? old.filter((q) => q.id !== id.id) : []
             );
             utils.quest.getAllTakenSideQuests.setData(undefined, (old) => {
                 const newQuest = {
                     quest: { ...quest },
-                    id,
+                    id: id.id,
                     userId: '',
                     questId: '',
-                    isActivelyParticipating: false,
+                    isActivelyParticipating: null,
                     isPresent: null,
                     isPresentVerified: false,
                     completedAt: null
@@ -48,6 +48,7 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             await utils.quest.getAllNotTakenSideQuests.invalidate();
             await utils.quest.getAllTakenSideQuests.invalidate();
             await utils.quest.getUserScore.invalidate();
+            await utils.mamet.getAllEnrollments.invalidate();
         },
     });
 }

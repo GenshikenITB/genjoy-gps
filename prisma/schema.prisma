@@ -79,7 +79,7 @@ model QuestEnrollment {
     questId                 String
     isPresent               String?
     isPresentVerified       Boolean   @default(false)
-    isActivelyParticipating Boolean   @default(false)
+    isActivelyParticipating Boolean?
     completedAt             DateTime?
     user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     quest                   Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
