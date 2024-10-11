@@ -48,7 +48,7 @@ model User {
     email           String?           @unique
     emailVerified   DateTime?
     image           String?
-    role            Role              @default(MAMET)
+    role            Role              @default(MENTEE)
     accounts        Account[]
     sessions        Session[]
     QuestEnrollment QuestEnrollment[]
