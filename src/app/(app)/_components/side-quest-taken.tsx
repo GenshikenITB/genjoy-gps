@@ -20,7 +20,7 @@ export function SideQuestTaken() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          AVAILABLE SIDE QUEST
+          SIDE QUEST TAKEN
         </motion.span>
       </CardHeader>
       <AnimatePresence mode="wait">
