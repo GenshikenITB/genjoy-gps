@@ -57,9 +57,9 @@ export const authOptions: NextAuthOptions = {
         "1279817638708772986",
         "1279817589878689856"
       ];
-      const discordApiUrl = `https://discord.com/api/v10/users/@me/guilds/${discordGuildId}/member`;
+      const discordApiUrl = `https://discord.com/api/v10/guilds/${discordGuildId}/members/${account?.providerAccountId}`;
       const headers = {
-        Authorization: `${account?.token_type} ${account?.access_token}`,
+        Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
       };
 
       try {
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.DISCORD_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: 'identify email guilds guilds.members.read',
+          scope: 'identify email',
         },
       },
     }),
