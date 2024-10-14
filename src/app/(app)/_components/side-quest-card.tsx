@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import {
   CheckIcon,
@@ -100,7 +101,9 @@ export function SideQuestCard({
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <CardDescription>{quest.description}</CardDescription>
+            <CardDescription>
+              <ReactMarkdown>{quest.description}</ReactMarkdown>
+            </CardDescription>
           </CardContent>
           <CardFooter className="flex-col space-y-2 p-4 pt-0 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">
             {isMamet ? (
@@ -286,7 +289,7 @@ export function SideQuestCard({
         open={isTakeQuestAlertOpen}
         onOpenChange={setIsTakeQuestAlertOpen}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-sm rounded-xl">
           <DialogHeader>
             <DialogTitle>Konfirmasi Pengambilan Quest</DialogTitle>
           </DialogHeader>
@@ -295,7 +298,7 @@ export function SideQuestCard({
               Jika kamu mengambil quest ini, kamu harus wajib menyelesaikannya.
             </p>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex flex-col gap-2">
             <Button
               variant="outline"
               onClick={() => setIsTakeQuestAlertOpen(false)}

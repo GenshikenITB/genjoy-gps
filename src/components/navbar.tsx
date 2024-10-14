@@ -20,17 +20,29 @@ export function Navbar() {
       {session.data?.user.role === Role.MAMET && (
         <div className="flex flex-col items-start gap-1 md:flex-row md:items-center">
           <Link href="/">
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              className="text-primary hover:text-pink-400"
+              size="sm"
+            >
               <span>Homepage</span>
             </Button>
           </Link>
           <Link href="/add-quest">
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              className="text-primary hover:text-pink-400"
+              size="sm"
+            >
               <span>Add Quest</span>
             </Button>
           </Link>
           <Link href="/verify">
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              className="text-primary hover:text-pink-400"
+              size="sm"
+            >
               <span>Verify</span>
             </Button>
           </Link>

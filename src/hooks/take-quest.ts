@@ -1,10 +1,12 @@
 import { api } from "@/trpc/react";
 import type { Quest } from "@prisma/client";
+import { toast } from "sonner";
 
 export function useTakeQuest({ quest }: { quest: Quest }) {
     const utils = api.useUtils();
     return api.quest.takeQuest.useMutation({
         onMutate: async (id) => {
+            toast.info("⌛ Taking quest...");
             await utils.quest.getAllNotTakenSideQuests.cancel();
             await utils.quest.getAllTakenSideQuests.cancel();
 
@@ -31,6 +33,7 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             return { prevNotTakenQuests, prevTakenQuests };
         },
         onError: (err, id, ctx) => {
+            toast.error("❗️ An error occurred while taking the quest.");
             if (ctx?.prevNotTakenQuests !== undefined) {
                 utils.quest.getAllNotTakenSideQuests.setData(
                     undefined,
@@ -45,6 +48,7 @@ export function useTakeQuest({ quest }: { quest: Quest }) {
             }
         },
         onSuccess: async () => {
+            toast.success("✅ Quest taken successfully.");
             await utils.quest.getAllNotTakenSideQuests.invalidate();
             await utils.quest.getAllTakenSideQuests.invalidate();
             await utils.quest.getUserScore.invalidate();

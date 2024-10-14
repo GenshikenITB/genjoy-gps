@@ -117,12 +117,14 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="flex w-full items-center justify-between text-center">
-                  <p className="my-4 text-sm text-muted-foreground">
+                <div className="mb-2 flex w-full flex-col items-center justify-between text-center md:flex-row">
+                  <p className="my-2 text-left text-sm text-muted-foreground">
                     {quest.description}
                   </p>
                   <Badge variant={quest.isHandsOn ? "outline" : "secondary"}>
-                    {quest.isHandsOn ? "Hands On" : "Non Hands On"}
+                    <span className="text-nowrap">
+                      {quest.isHandsOn ? "Hands On" : "Non Hands On"}
+                    </span>
                   </Badge>
                 </div>
                 <div className="mb-4 grid grid-cols-2 gap-4">
@@ -239,7 +241,7 @@ export function VerifyCard({ enrollment }: { enrollment: VerifyCard }) {
                 </div>
 
                 {isActivelyParticipating === null ? (
-                  <div className="flex w-full gap-2">
+                  <div className="flex w-full flex-col gap-2 sm:flex-row">
                     <Button
                       onClick={() => approveParticipation.mutate(id)}
                       disabled={approveParticipation.isPending}

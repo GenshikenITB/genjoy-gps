@@ -172,11 +172,13 @@ export function AddQuestDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="description">Description</FormLabel>
+                  <FormLabel htmlFor="description">
+                    Description (markdown applied on save)
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       id="description"
-                      placeholder="Enter quest description"
+                      placeholder="Enter quest description support simple markdown, e.g. **bold**, _italic_, [link](https://example.com)"
                       className="min-h-[120px]"
                       {...field}
                     />
