@@ -59,6 +59,8 @@ export function AddQuestDialog({
     },
     async onSuccess() {
       await utils.mamet.getQuests.invalidate();
+      await utils.quest.getAllNotTakenSideQuests.invalidate();
+      await utils.quest.getAllTakenSideQuests.invalidate();
       setIsOpen(false);
       form.reset();
       toast.success("✅ Quest created successfully.");
@@ -75,6 +77,8 @@ export function AddQuestDialog({
     },
     async onSuccess() {
       await utils.mamet.getQuests.invalidate();
+      await utils.quest.getAllNotTakenSideQuests.invalidate();
+      await utils.quest.getAllTakenSideQuests.invalidate();
       setIsOpen(false);
       form.reset();
       toast.success("✅ Quest updated successfully.");
@@ -210,6 +214,10 @@ export function AddQuestDialog({
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value={QuestType.COMMUNITY} id="side" />
                         <FormLabel htmlFor="side">Community</FormLabel>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value={QuestType.MAGANG} id="magang" />
+                        <FormLabel htmlFor="magang">Magang</FormLabel>
                       </div>
                     </RadioGroup>
                   </FormControl>

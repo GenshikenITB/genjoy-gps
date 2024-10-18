@@ -39,7 +39,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Quest, QuestEnrollment } from "@prisma/client";
+import { QuestType, type Quest, type QuestEnrollment } from "@prisma/client";
 import React from "react";
 import { useSession } from "next-auth/react";
 
@@ -94,7 +94,14 @@ export function SideQuestCard({
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">{quest.title}</CardTitle>
               <Badge
-                variant={quest.type === "COMMUNITY" ? "default" : "secondary"}
+                variant={
+                  quest.type !== QuestType.CREATIVE_ARTS
+                    ? "default"
+                    : "secondary"
+                }
+                className={cn(
+                  quest.type === QuestType.MAGANG && "bg-yellow-300",
+                )}
               >
                 {quest.type}
               </Badge>

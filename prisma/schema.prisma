@@ -90,6 +90,7 @@ model QuestEnrollment {
 enum QuestType {
     CREATIVE_ARTS
     COMMUNITY
+    MAGANG
 }
 
 enum Role {

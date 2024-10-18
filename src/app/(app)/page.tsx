@@ -4,6 +4,7 @@ import { SideQuestAvailable } from "./_components/side-quest-available";
 import { SideQuestTaken } from "./_components/side-quest-taken";
 import { getServerAuthSession } from "@/server/auth";
 import React from "react";
+import { MagangBanner } from "./_components/magang-banner";
 
 export default async function Home() {
   const session = await getServerAuthSession();
@@ -15,8 +16,9 @@ export default async function Home() {
   return (
     <>
       <Profile />
-      <SideQuestTaken />
+      <MagangBanner />
       <SideQuestAvailable />
+      <SideQuestTaken />
     </>
   );
 }

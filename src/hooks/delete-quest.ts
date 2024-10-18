@@ -9,6 +9,7 @@ export function useDeleteQuest() {
         },
         async onSuccess() {
             await utils.mamet.getQuests.invalidate();
+            await utils.quest.getAllNotTakenSideQuests.invalidate();
             toast.success("✅ Quest deleted successfully.");
         },
         onError() {
