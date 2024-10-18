@@ -27,7 +27,7 @@ export function MagangBanner() {
             <Card>
               <CardHeader>
                 <span className="text-balance text-center text-4xl font-bold">
-                  MAGANG BPH TELAH DIBUKA!
+                  MAGANG BP TELAH DIBUKA!
                 </span>
                 <span className="text-balance text-center text-muted-foreground">
                   Ayo daftar! Untuk mengambil magang, ambil quest dengan label

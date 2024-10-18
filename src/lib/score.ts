@@ -6,14 +6,13 @@ export const calculatePoints = (
     isActivelyParticipating: boolean | null,
     isPresentVerified: boolean,
     isPresent: string | null,
-    fixedPtsBidang = 10,
-    fixedPtsComun = 5,
 ): number => {
 
     // Map quest types to base points
     const basePointsMap: Record<string, number> = {
-        [QuestType.CREATIVE_ARTS]: fixedPtsBidang,
-        [QuestType.COMMUNITY]: fixedPtsComun
+        [QuestType.CREATIVE_ARTS]: 10,
+        [QuestType.COMMUNITY]: 5,
+        [QuestType.MAGANG]: 30,
     };
 
     const baseValue = basePointsMap[type] ?? 0;

@@ -1,3 +1,4 @@
+import { sendMessage } from "@/lib/webhook";
 import {
     createTRPCRouter,
     protectedProcedure,
@@ -77,9 +78,13 @@ export const mametRouter = createTRPCRouter({
         .input(questFormSchema)
         .mutation(async ({ ctx, input }) => {
             // Create a new quest
-            return await ctx.db.quest.create({
+            const quest = await ctx.db.quest.create({
                 data: input,
             });
+
+            await sendMessage(quest);
+
+            return quest;
         }),
 
     editQuest: protectedProcedure
