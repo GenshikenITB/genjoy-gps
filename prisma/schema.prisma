@@ -68,6 +68,7 @@ model Quest {
     description     String
     type            QuestType
     isHandsOn       Boolean
+    isVisiblyActive Boolean           @default(true)
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
     QuestEnrollment QuestEnrollment[]

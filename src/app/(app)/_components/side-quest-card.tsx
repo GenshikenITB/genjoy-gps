@@ -42,6 +42,9 @@ import {
 import { QuestType, type Quest, type QuestEnrollment } from "@prisma/client";
 import React from "react";
 import { useSession } from "next-auth/react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useUpdateQuestVisibility } from "@/hooks/update-quest-visibility";
 
 export function SideQuestCard({
   isMamet = false,
@@ -64,6 +67,14 @@ export function SideQuestCard({
   const take = useTakeQuest({ quest: quest! });
   const upload = useUploadProofQuest({ setIsDialogOpen });
   const remove = useDeleteQuest();
+  const visibility = useUpdateQuestVisibility();
+
+  const handleVisibilityChange = (checked: boolean) => {
+    visibility.mutate({
+      questId: quest!.id,
+      isVisiblyActive: checked,
+    });
+  };
 
   const handleTakeQuest = () => {
     setIsTakeQuestAlertOpen(true);
@@ -115,6 +126,14 @@ export function SideQuestCard({
           <CardFooter className="flex-col space-y-2 p-4 pt-0 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">
             {isMamet ? (
               <div className="flex w-full flex-col space-y-2 sm:flex-row sm:justify-end sm:space-x-2 sm:space-y-0">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="is-visible">Quest Visibility</Label>
+                  <Switch
+                    checked={quest.isVisiblyActive}
+                    onCheckedChange={handleVisibilityChange}
+                    id="is-visible"
+                  />
+                </div>
                 <Button
                   onClick={() => openDialog?.(quest)}
                   size="sm"

@@ -11,6 +11,7 @@ export const questRouter = createTRPCRouter({
     // Get all quests that the user has not completed
     return await ctx.db.quest.findMany({
       where: {
+        isVisiblyActive: true,
         QuestEnrollment: {
           none: {
             userId: ctx.session.user.id,
@@ -94,8 +95,7 @@ export const questRouter = createTRPCRouter({
     .input(z.object({
       id: z.string(),
       userId: z.string(),
-    })
-    )
+    }))
     .mutation(async ({ ctx, input }) => {
       // Untake a quest
       return ctx.db.questEnrollment.update({
@@ -127,6 +127,23 @@ export const questRouter = createTRPCRouter({
         },
         data: {
           isPresent: input.image,
+        },
+      });
+    }),
+
+  toggleQuestVisibility: protectedProcedure
+    .input(z.object({
+      questId: z.string(),
+      isVisiblyActive: z.boolean(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Toggle the visibility of a quest
+      return ctx.db.quest.update({
+        where: {
+          id: input.questId,
+        },
+        data: {
+          isVisiblyActive: input.isVisiblyActive,
         },
       });
     }),
