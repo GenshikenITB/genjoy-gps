@@ -2,6 +2,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { LeaderboardClientPage } from "./page.client";
+import { api } from "@/trpc/server";
 
 export default async function AddQuest() {
   const session = await getServerAuthSession();
@@ -9,5 +10,6 @@ export default async function AddQuest() {
     return redirect("/");
   }
 
-  return <LeaderboardClientPage />;
+  const leaderboard = await api.mamet.getAllUsersScore();
+  return <LeaderboardClientPage users={leaderboard} />;
 }
