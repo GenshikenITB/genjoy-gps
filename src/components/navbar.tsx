@@ -18,7 +18,7 @@ export function Navbar() {
   const NavItems = () => (
     <>
       {session.data?.user.role === Role.MAMET && (
-        <div className="flex flex-col items-start gap-1 md:flex-row md:items-center">
+        <div className="flex flex-col items-start gap-1">
           <Link href="/">
             <Button
               variant="ghost"
@@ -44,6 +44,15 @@ export function Navbar() {
               size="sm"
             >
               <span>Verify</span>
+            </Button>
+          </Link>
+          <Link href="/leaderboard">
+            <Button
+              variant="ghost"
+              className="text-primary hover:text-pink-400"
+              size="sm"
+            >
+              <span>Leaderboard</span>
             </Button>
           </Link>
         </div>
@@ -94,42 +103,40 @@ export function Navbar() {
               alt="Genshiken"
             />
           </Link>
-          <div className="hidden w-full justify-end md:flex md:items-center md:gap-5">
+          {/* <div className="hidden w-full justify-end md:flex md:items-center md:gap-5">
             <NavItems />
-          </div>
+          </div> */}
         </div>
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <AnimatePresence initial={false} mode="wait">
-              {isMenuOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 90 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <X />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="menu"
-                  initial={{ opacity: 0, rotate: 90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: -90 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Menu />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <AnimatePresence initial={false} mode="wait">
+            {isMenuOpen ? (
+              <motion.div
+                key="close"
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ opacity: 0, rotate: 90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: -90 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <span className="sr-only">Toggle menu</span>
+        </Button>
       </nav>
       <AnimatePresence>
         {isMenuOpen && (
@@ -138,7 +145,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden md:hidden"
+            className="overflow-hidden"
           >
             <div className="border-t border-gray-200 px-5 py-3 dark:border-gray-700">
               <div className="flex flex-col gap-4">
