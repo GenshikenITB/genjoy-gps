@@ -12,8 +12,6 @@ export default async function SignIn() {
     return redirect("/");
   }
 
-  const providers = await getProviders();
-
   return (
     <div className="flex flex-col items-center space-y-6 p-8">
       <div className="flex flex-col items-center space-y-2">
@@ -29,10 +27,7 @@ export default async function SignIn() {
       </div>
 
       <div className="flex w-full max-w-sm justify-center space-y-4">
-        {providers &&
-          Object.values(providers).map((provider) => (
-            <SignInButton key={provider.name} provider={provider} />
-          ))}
+        <SignInButton />
       </div>
     </div>
   );

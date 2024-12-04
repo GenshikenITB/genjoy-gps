@@ -76,9 +76,12 @@ export function LeaderboardClientPage({ users }: { users: UserScore[] }) {
                       )}
                     </div>
                     <Avatar>
-                      <AvatarImage src={user.image} alt={user.name} />
+                      <AvatarImage
+                        src={user.image ?? undefined}
+                        alt={user.name ?? "User"}
+                      />
                       <AvatarFallback>
-                        {user.name.charAt(0).toLocaleUpperCase()}
+                        {user.name?.charAt(0).toLocaleUpperCase() ?? "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-grow">
